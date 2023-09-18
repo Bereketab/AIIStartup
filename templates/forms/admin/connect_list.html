@@ -1,0 +1,64 @@
+
+
+
+
+
+{% extends "./base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block body %}
+{% include './navbar.html' %}
+ <section class="dashboard">
+    <div class="top">
+       <i class="uil uil-bars sidebar-toggle"></i>
+       <div class="search-box">
+          <i class="uil uil-search"></i>
+          <input type="text" placeholder="Search here...">
+       </div>
+       <img src="{{profile_type.profile_pic.url }}" alt="">
+    </div>
+
+    <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
+        <p>hello</p>
+       
+        
+
+{% load crispy_forms_tags %}
+
+{% if request.user == u %}
+		<h1>Connects</h1>
+		
+		{% for friend in friends_list %}
+			<a href="{{ friend.user.profile.get_absolute_url }}">{{ friend.user.username }}</a>
+            <small><a class='btn btn-warning' href="/users/delete/{{ request.user.id }}">Delete connect</a></small>
+		{% endfor %}
+		<hr>
+		<h2>Sent Connects</h2>
+		<ul>
+		{% for s_request in sent_friend_requests %}
+			<li>{{ s_request.to_user.username }}</li>
+		{% endfor %}
+		</ul>
+		<hr>
+		<h2>Received Connects</h2>
+		
+		{% for r_request in rec_friend_requests %}
+			<p><a href="{{ r_request.from_user.profile.get_absolute_url }}">{{ r_request.from_user.username }}</a></p>
+			<small><a class='btn btn-primary' href="/users/accept/{{ r_request.from_user.id }}">Accept</a></small>
+			<small><a class='btn btn-warning' href="/users/delete/{{ r_request.from_user.id }}">Ignore</a></small>
+		{% endfor %}
+		
+	{% else %}
+        {% if button_status == 'not_friend' %}
+        <p>{{u.username}} </p>
+			<small><a class='btn btn-primary' href="/users/send/{{ u.id }}">Add Connect</a></small>
+		{% elif button_status == 'friend_request_sent' %}
+			<small><a class="btn btn-warning" href="/users/cancel/{{ u.id }}">Cancel Request</a></small>
+		{% endif %}
+    
+	{% endif %}
+      </main>
+      
+ </section>
+
+{% endblock %}

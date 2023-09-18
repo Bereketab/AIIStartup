@@ -1,0 +1,105 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% load static %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+      <title>EAII Startup</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+         <link rel="stylesheet" type="text/css" href="{% static 'fw/css/ui-lightness/jquery-ui-1.8.2.custom.css'%}" />  
+         <link href="{% static 'assets/css/bootstrap.min.css'%}" rel="stylesheet" />
+         <link href="{% static 'fw/css/base/style.css'%}" rel="stylesheet" />
+
+         {% comment %} <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> {% endcomment %}
+<script src="{% static '/fw/js/moment-with-locales.min.js'%}"></script>
+<script src="{% static '/fw/js/tempusdominus-bootstrap-4.js'%}"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+    <style type="text/css">
+            #demoWrapper {
+                padding : 1em;
+                /* width : 500px; */
+                border-style: solid;
+            }
+
+            #fieldWrapper {
+            }
+
+            #demoNavigation {
+                margin-top : 0.5em;
+                margin-right : 1em;
+                text-align: right;
+            }
+            
+            #data {
+                font-size : 0.7em;
+            }
+
+            input {
+                margin-right: 0.1em;
+                margin-bottom: 0.5em;
+            }
+
+            .input_field_25em {
+                width: 2.5em;
+            }
+
+            .input_field_3em {
+                width: 3em;
+            }
+
+            .input_field_35em {
+                width: 3.5em;
+            }
+
+            .input_field_12em {
+                width: 12em;
+            }
+
+            label {
+                margin-bottom: 0.2em;
+                font-weight: bold;
+                font-size: 0.8em;
+            }
+
+            label.error {
+                color: red;
+                font-size: 0.8em;
+                margin-left : 0.5em;
+            }
+
+            .step span {
+                float: right;
+                font-weight: bold;
+                padding-right: 0.8em;
+            }
+
+            .navigation_button {
+                width : 70px;
+            }
+            
+            #data {
+                    overflow : auto;
+            }
+        </style>
+    </head>
+<body>
+    {% block content %}
+       
+    {% endblock %}
+ 
+<!-- <script type="text/javascript" src="{% static 'fw/js/jquery-1.4.2.min.js'%}"></script>		 -->
+<script type="text/javascript" src="{% static '/fw/js/jquery.form.js'%}"></script>
+<script type="text/javascript" src="{% static '/fw/js/jquery.validate.js'%}"></script>
+<script type="text/javascript" src="{% static '/fw/js/bbq.js'%}"></script>
+<script type="text/javascript" src="{% static 'fw/js/jquery-ui-1.8.5.custom.min.js'%}"></script>
+<script type="text/javascript" src="{% static '/fw/js/jquery.form.wizard.js'%}"></script>
+
+<script type="text/javascript">
+
+  
+</script>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+
+{% load static %}
+ <div class="card-body" style="overflow-x: auto;">
+    <table id="startup1" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Market Scope</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+        
+        
+      </tr>
+      </thead>
+      <tbody>
+        {% for s in startups %}
+      <tr class="startup-row"  id="obj"   data-target="#modal-startup"  
+      data-toggle="modal" 
+    
+      data-id="{{s.id}}"
+      data-name="{{s.description.name}}"
+      {% if s.description.logo %} data-logo="{{s.description.logo.url}}" {% endif %}      
+      data-establishment_year="{{s.establishment_year}}"
+      data-stage="{{s.stage}}"
+      data-market_scope="{{s.market_scope}}"
+      data-country="{{s.address.country}}"
+      data-region_name="{{s.address.location.region.region_name}}"
+      data-wereda_name="{{s.address.location.wereda_name}}"
+      data-phone_number="{{s.address.phone_number}}"
+      data-city_name="{{s.address.city_name}}"
+      data-website="{{s.address.website}}"
+
+
+      data-first_name="{{s.profile.user.first_name}}"
+      data-middle_name="{{s.profile.middle_name}}"
+      data-last_name="{{s.profile.user.last_name}}"
+      data-username="{{s.profile.user.username}}"
+      data-email="{{s.profile.user.email}}"
+      data-birth_date="{{s.profile.birth_date}}"
+      data-profile="{{s.profile.profile_pic.url}}"
+      data-contact="{{s.profile.contact}}"
+      data-secondary_email="{{s.profile.secondary_email}}"
+      data-gender="{{s.profile.gender}}"
+      data-modified="{{s.profile.modified}}"
+
+
+
+     
+      >
+
+        <td>{% if s.profile.user.is_active %}
+          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          {% endif %}</td>
+        <td >{{s.description.name}}</td>
+        <td>{{s.description.description}}</td>
+        <td>{{s.description.sector}}</td>
+        <td>{{s.market_scope}}</td>
+        <td>{{s.address.country}}</td>
+        <td>{{s.address.location.region.region_name}}</td>
+        <td>{{s.address.location.wereda_name}}</td>
+        <td>{{s.address.phone_number}}</td>
+        <td>{{s.address.city_name}}</td>
+        <td>{{s.address.website}}</td>
+        <td>{{s.profile.user.first_name}}</td>
+        <td>{{s.profile.middle_name}}</td>
+        <td>{{s.profile.user.last_name}}</td>
+        <td>{{s.profile.user.username}}</td>
+        <td>{{s.profile.contact}}</td>
+        <td>{{s.profile.birth_date}}</td>
+        <td>{{s.profile.gender}}</td>
+        
+       
+      </tr>
+      {% endfor %}
+
+      
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Market Scope</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <script src="{% static 'sb/plugins/jquery/jquery.min.js' %}"></script>
+  <script>
+    $(document).ready(function () {
+       // Initialize Lightbox2
+
+        $('.startup-row').click(function () {
+            var startupId = $(this).data('id');
+            
+            // Retrieve the startup data from the clicked row
+            var startupData = {
+    id: $(this).data('id'),
+    name: $(this).data('name'),
+    logo: $(this).data('logo'),
+    establishment_year: $(this).data('establishment_year'),
+    stage: $(this).data('stage'),
+    market_scope: $(this).data('market_scope'),
+    country: $(this).data('country'),
+    region_name: $(this).data('region_name'),
+    wereda_name: $(this).data('wereda_name'),
+    phone_number: $(this).data('phone_number'),
+    city_name: $(this).data('city_name'),
+    website: $(this).data('website'),
+    first_name: $(this).data('first_name'),
+    middle_name: $(this).data('middle_name'),
+    last_name: $(this).data('last_name'),
+    username: $(this).data('username'),
+    email: $(this).data('email'),
+    birth_date: $(this).data('birth_date'),
+    profile: $(this).data('profile'),
+    contact: $(this).data('contact'),
+    secondary_email: $(this).data('secondary_email'),
+    gender: $(this).data('gender'),
+    modified: $(this).data('modified')
+};
+
+    
+            $('#modal-id').text(startupData.id);
+$('#modal-name').text(startupData.name);
+$('#modal-logo').attr('src', startupData.logo);
+
+$('#modal-establishment-year').text(startupData.establishment_year);
+$('#modal-stage').text(startupData.stage);
+$('#modal-market-scope').text(startupData.market_scope);
+$('#modal-country').text(startupData.country);
+$('#modal-region-name').text(startupData.region_name);
+$('#modal-wereda-name').text(startupData.wereda_name);
+$('#modal-phone-number').text(startupData.phone_number);
+$('#modal-city-name').text(startupData.city_name);
+$('#modal-website').text(startupData.website);
+$('#modal-first-name').text(startupData.first_name);
+$('#modal-middle-name').text(startupData.middle_name);
+$('#modal-last-name').text(startupData.last_name);
+$('#modal-username').text(startupData.username);
+$('#modal-email').text(startupData.email);
+$('#modal-birth-date').text(startupData.birth_date);
+$('#modal-profile').attr('src', startupData.profile);
+$('#modal-contact').text(startupData.contact);
+$('#modal-secondary-email').text(startupData.secondary_email);
+$('#modal-gender').text(startupData.gender);
+$('#modal-modified').text(startupData.modified);
+
+    
+            // Show the modal
+            $('#modal-startup').modal('show');
+        });
+    });
+    </script>
+    
+
+ 
+  <!-- /.card-body -->

@@ -1,0 +1,194 @@
+{% extends './base.html'%} {% block content %} {% include './header.html' %}
+{% load static %}
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="{% static 'add/plugins/select2/css/select2.min.css'%}">
+<link rel="stylesheet" href="{% static 'add/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css'%}">
+{% load my_filters%}
+{%load static %}
+<!-- ======= Breadcrumbs ======= -->
+<div class="breadcrumbs">
+  <div class="container"></div>
+</div>
+<!-- End Breadcrumbs -->
+
+<!-- ======= Blog Section ======= -->
+<section id="blog" class="blog">
+  <div class="container" data-aos="fade-up">
+    <div class="row g-5">
+      <div class="col-lg-3">
+       {% include './sidebar.html' %}
+        <!-- End Blog Sidebar -->
+      </div>
+
+      <div class="col-lg-9">
+        {% comment %} <div class="input-group">
+          <div class="ui-widget" style="display:flex">
+            <label for="tags">Search profiles and send messages </label>
+            <input class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon"  id="tags" size="50">
+            <button type="button" class="btn btn-outline-primary">search</button>
+          </div>
+          </div> {% endcomment %}
+        <section style="background-color: #eee;">
+            <div class="container py-5">
+              <div class="row">
+                <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
+          
+                  <h5 class="font-weight-bold mb-3 text-center text-lg-start">Messages</h5>
+          
+                  <div class="card">
+                    <div class="card-body">
+          
+                      <ul class="list-unstyled mb-0">
+                        {% for m in messages_sent_d %}
+                        <li onclick=getMessageDetail('{{m.sender.id}}','{{m.reciever.id}}') class="p-2 border-bottom" style="background-color: #eee;">
+                          <a  class="d-flex justify-content-between">
+                            <div class="d-flex flex-row">
+                              <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp" alt="avatar"
+                                class="rounded-circle d-flex align-self-center me-3 shadow-1-strong" width="60">
+                              <div class="pt-1">
+                                <p class="fw-bold mb-0">{{m.from_user.username}}</p>
+                                <p class="small text-muted">{{m.message_body}}</p>
+                              </div>
+                            </div>
+                            <div class="pt-1">
+                              {% comment %} <p class="small text-muted mb-1">{{ m.timestamp|timesince|upto:','}} ago</p> {% endcomment %}
+                              {% comment %} <span class="badge bg-danger float-end">1</span> {% endcomment %}
+                            </div>
+                          </a>
+                        </li>
+                        {%endfor%}
+                      <script>
+                        function getMessageDetail(from_user,to_user){
+                          console.log(from_user)
+                          console.log(to_user)
+                          {% comment %} $.ajax({
+                            url: {% url 'main:message_detail'%},
+                            data: {'sender':from_user,'reciver':to_user},
+                            dataType: 'html',
+                            type: "POST",
+                            success: function (data) {
+                              $('#replaced').replaceWith(data)
+                              window.history.pushState('messages','messages','/messages/' + from_user +'-'+ to_user+'/');
+                              setTimeout(() => {
+                         
+                              }, "3000");
+                              
+                              
+                          
+                              
+                            },
+                            error: function (data) {
+                            }
+                          }); {% endcomment %}
+                        }
+                      </script>
+                      </ul>
+          
+                    </div>
+                  </div>
+          
+                </div>
+          
+                <div class="col-md-6 col-lg-7 col-xl-8">
+                  <ul class="list-unstyled" id='messageBox'>
+                    {% for chat in chats %}
+              <div class="chat">
+                  <p>
+                      <b>{{ chat.sender.user.username }}:</b>
+                      <span>{{ chat.text }}</span>
+                  </p>
+                  <p>{{ chat.log|date:'Y-m-d - h:i:s' }}</p>
+              </div>
+          {% endfor %}
+                    <form id="message_form" onsubmit="sendMessage()">
+                      {% csrf_token %}
+                      <div id="reciverSelection">
+                        <label style="padding-right: 16px;">To</label>
+                        <select class="select2"  multiple="multiple" id="tags" required data-placeholder="Select a State" style="width: 100%;">
+                      </select>
+                      </div>
+                    <li class="bg-white mb-3">
+                      <div class="form-outline">
+                        <textarea required class="form-control" id="textAreaExample2" rows="4"></textarea>
+                        <label class="form-label" for="textAreaExample2">Message</label>
+                      </div>
+                    </li>
+                    <button type="submit" class="btn btn-info btn-rounded float-end">Send</button>
+                    </form>
+                    <script>
+function sendMessage()
+                      $("#message_form").submit(function (event) {
+                        {% comment %} event.stopPropagation() {% endcomment %}
+                        console.log(event)
+                    
+                      })
+                    </script>
+                  </ul>
+               <div id='replaced'>
+                
+                                  </div>
+                  
+                  </ul>
+          
+                </div>
+          
+              </div>
+          
+            </div>
+          </section>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="{% static 'add/plugins/select2/js/select2.full.min.js' %}"></script>
+{% comment %} <script src="{% static 'reconnecting-websocket.js' %}"></script> {% endcomment %}
+
+<script>
+ 
+
+  $(function () {
+  
+   
+   
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+    getCurrentUserData('{{user.id}}')
+  
+    function getCurrentUserData(user){
+      
+     
+      $.ajax({
+        headers: { "X-CSRFToken":  '{{ csrf_token }}' },
+        url: {% url 'main:currentUserConnectUserList'%},
+        data: {'user':user},
+        type: "POST",
+        success: function (data) {
+        
+          data.map(x=>x.profile__user__username,x=>x.profile__user__id).forEach(function(name){
+            {% comment %} console.log(data.filter(x=>x.profile__user__username==name)[0].profile__user__id) {% endcomment %}
+            $('#tags').append('<option id="'+data.filter(x=>x.profile__user__username==name)[0].profile__user__id+'" value="'+name+'">'+name)+'</option>';
+
+          })
+        },
+        error: function (data) {
+        }
+      });
+      
+    }
+
+
+  })
+  </script>
+
+
+<div class="overlay hidden"></div>
+
+
+{% endblock content%}

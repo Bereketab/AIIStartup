@@ -1,0 +1,101 @@
+{% extends './base.html'%} {% block content %} {% include './header.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="{% static 'add/plugins/select2/css/select2.min.css'%}">
+<link rel="stylesheet" href="{% static 'add/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css'%}">
+{% load my_filters%}
+{%load static %}
+<!-- ======= Breadcrumbs ======= -->
+<div class="breadcrumbs">
+  <div class="container"></div>
+</div>
+<!-- End Breadcrumbs -->
+
+<!-- ======= Blog Section ======= -->
+<section id="blog" class="blog">
+  <div class="container" data-aos="fade-up">
+    <div class="row g-5">
+      <div class="col-lg-3">
+        <!-- End Blog Sidebar -->
+      </div>
+
+      <div class="col-lg-9">
+ <form method="post"  enctype="multipart/form-data">
+  {% csrf_token %}
+  <input hidden name="Startup" value="Startup" />
+  <h4 style="color: #226470"> Basics</h4>
+  <div id="basics">
+    {% include './description_edit.html' %}   
+
+  </div>
+  <div id="description">
+    <h4 style="color: #226470"> Specific</h4>
+
+    {% include './entity_edit.html' %}   
+
+  </div>
+  <div id="address">
+    <h4 style="color: #226470"> Address</h4>
+    {% include './address_edit.html' %}   
+  </div>
+  <div id="profile">
+    <h4 style="color: #226470"> Profile/responsible personel</h4>
+    {% include './profile_edit.html' %}
+
+  </div>
+
+  <button type="submit" class="btn btn-primary">Update</button>
+</form> 
+        {% comment %} <form method="post">
+            {% csrf_token %}
+            {% include './address_edit.html' %}
+            {% include './profile_edit.html' %}
+           
+            
+            
+
+            <button type="submit">Save Changes</button>
+          </form> {% endcomment %}
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+{% if messages %}
+  $(document).ready(function() {
+    var errorMessage = '';
+
+    {% for message in messages %}
+      // Remove HTML tags and line breaks from error messages
+      var formattedMessage = '{{ message | striptags | linebreaksbr }}';
+      errorMessage += formattedMessage;
+    {% endfor %}
+
+    var icon = 'error'; // Default icon
+
+    // Map Django message levels to SweetAlert icons
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        icon = 'error';
+      {% elif message.tags == 'success' %}
+        icon = 'success';
+      {% elif message.tags == 'warning' %}
+        icon = 'warning';
+      {% elif message.tags == 'info' %}
+        icon = 'info';
+      {% endif %}
+    {% endfor %}
+
+    Swal.fire({
+      title: icon+'!',
+      html: errorMessage, // Use 'html' option to render HTML content
+      icon: icon, // Set the SweetAlert icon based on message level
+      confirmButtonText: 'OK'
+    });
+  });
+{% endif %}
+</script>
+{% endblock content%}

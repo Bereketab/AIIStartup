@@ -1,0 +1,199 @@
+
+<div class="card-body" style="overflow-x: auto;">
+    <table id="example3" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Service</th>
+        <th>OwnerShip</th>
+        <th>Focus Industry</th>
+        <th>Level</th>
+        <th>Funded By</th>
+        <th>Program Duration</th>
+        <th>Logo</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+        
+        
+      </tr>
+      </thead>
+      <tbody>
+        {% for s in incubatorsAccelatorsHub %}
+      <p hidden class="mentor-name" >{{s.description.name}}</p>
+
+        <tr data-toggle="modal" class="incubator-row"  data-target="#modal-incubator" id="obj" 
+        id="obj"
+        data-id="{{s.id}}"
+        data-incubator-service="{{s.service}}"
+        data-incubator-ownership="{{s.ownership}}"
+        data-incubator-ownership_other="{{s.ownership_other}}"
+        data-incubator-focus_industry="{{s.focusIndustry}}"
+        data-incubator-level="{{s.level}}"
+        data-incubator-funded_by="{{s.funded_by}}"
+        data-incubator-funded_by_other="{{s.funded_by_other}}"
+        data-incubator-program_duration="{{s.program_duration}}"
+        {% if s.attachments %} data-attachments="{{s.attachments.url}}" {% endif %}      
+        data-incubator-description_name="{{s.description.name}}"
+        data-incubator-country="{{s.address.country}}"
+        data-incubator-region_name="{{s.address.location.region.region_name}}"
+        data-incubator-wereda_name="{{s.address.location.wereda_name}}"
+        data-incubator-phone_number="{{s.address.phone_number}}"
+        data-incubator-city_name="{{s.address.city_name}}"
+        data-incubator-website="{{s.address.website}}"
+        data-incubator-profile="{{s.profile.profile_pic.url}}"
+        data-incubator-contact="{{s.profile.contact}}"
+        data-incubator-secondary_email="{{s.profile.secondary_email}}"
+        data-incubator-gender="{{s.profile.gender}}"
+        data-incubator-modified="{{s.profile.modified}}"
+        >
+         
+        <td>{% if s.profile.user.is_active %}
+          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          {% endif %}</td>
+        <td>{{s.description.name}}</td>
+        <td>{{s.description.description}}</td>
+        <td>{{s.description.sector}}</td>
+        <td>{{s.service}}</td>
+        <td>{{s.ownership}}</td>
+        <td>{{s.focusIndustry}}</td>
+        <td>{{s.level}}</td>
+        <td>{{s.funded_by}}</td>
+        <td>{{s.program_duration}}</td>
+        <td><img src="{{s.description.logo}}"></td>
+        <td>{{s.address.country}}</td>
+        <td>{{s.address.location.region.region_name}}</td>
+        <td>{{s.address.location.wereda_name}}</td>
+        <td>{{s.address.phone_number}}</td>
+        <td>{{s.address.city_name}}</td>
+        <td>{{s.address.website}}</td>
+        <td>{{s.profile.user.first_name}}</td>
+        <td>{{s.profile.middle_name}}</td>
+        <td>{{s.profile.user.last_name}}</td>
+        <td>{{s.profile.user.username}}</td>
+        <td>{{s.profile.contact}}</td>
+        <td>{{s.profile.birth_date}}</td>
+        <td>{{s.profile.gender}}</td>
+        
+       
+      </tr>
+      {% endfor %}
+
+      
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Service</th>
+        <th>OwnerShip</th>
+        <th>Focus Industry</th>
+        <th>Level</th>
+        <th>Funded By</th>
+        <th>Program Duration</th>
+        <th>Logo</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+  <!-- /.card-body -->
+
+  
+  <script>
+    $(document).ready(function () {
+         $('.incubator-row').click(function () {
+             var startupId = $(this).data('id');
+             console.log(startupId)
+             // Retrieve the startup data from the clicked row
+             var incubatorData = {
+    name: $(this).find('.incubator-name').text(),
+    service: $(this).data('incubator-service'),
+    ownership: $(this).data('incubator-ownership'),
+    ownership_other: $(this).data('incubator-ownership_other'),
+    focus_industry: $(this).data('incubator-focus_industry'),
+    level: $(this).data('incubator-level'),
+    funded_by: $(this).data('incubator-funded_by'),
+    funded_by_other: $(this).data('incubator-funded_by_other'),
+    program_duration: $(this).data('incubator-program_duration'),
+    attachments: $(this).data('incubator-attachments'),
+    description_name: $(this).data('incubator-description_name'),
+    country: $(this).data('incubator-country'),
+    region_name: $(this).data('incubator-region_name'),
+    wereda_name: $(this).data('incubator-wereda_name'),
+    phone_number: $(this).data('incubator-phone_number'),
+    city_name: $(this).data('incubator-city_name'),
+    website: $(this).data('incubator-website'),
+    profile_pic: $(this).data('incubator-profile'),
+    contact: $(this).data('incubator-contact'),
+    secondary_email: $(this).data('incubator-secondary_email'),
+    gender: $(this).data('incubator-gender'),
+    modified: $(this).data('incubator-modified')
+};
+
+             
+            // Fill the modal elements with data from incubatorData
+            $('#modal-incubator-name').text(incubatorData.name);
+$('#modal-incubator-service').text(incubatorData.service);
+$('#modal-incubator-ownership').text(incubatorData.ownership);
+$('#modal-incubator-ownership-other').text(incubatorData.ownership_other);
+$('#modal-incubator-focus-industry').text(incubatorData.focus_industry);
+$('#modal-incubator-level').text(incubatorData.level);
+$('#modal-incubator-funded-by').text(incubatorData.funded_by);
+$('#modal-incubator-funded-by-other').text(incubatorData.funded_by_other);
+$('#modal-incubator-program-duration').text(incubatorData.program_duration);
+
+// Set the 'src' attribute for attachments if it's an image element
+if ($('#modal-incubator-attachments').is('img')) {
+    $('#modal-incubator-attachments').attr('src', incubatorData.attachments);
+}
+
+$('#modal-incubator-description-name').text(incubatorData.description_name);
+$('#modal-incubator-country').text(incubatorData.country);
+$('#modal-incubator-region-name').text(incubatorData.region_name);
+$('#modal-incubator-wereda-name').text(incubatorData.wereda_name);
+$('#modal-incubator-phone-number').text(incubatorData.phone_number);
+$('#modal-incubator-city-name').text(incubatorData.city_name);
+$('#modal-incubator-website').text(incubatorData.website);
+
+// Set additional profile-related data
+$('#modal-incubator-profile-pic').attr('src', incubatorData.profile_pic);
+$('#modal-incubator-contact').text(incubatorData.contact);
+$('#modal-incubator-secondary-email').text(incubatorData.secondary_email);
+$('#modal-incubator-gender').text(incubatorData.gender);
+$('#modal-incubator-modified').text(incubatorData.modified);
+
+
+             $('#modal-lg').modal('show');
+         });
+     });
+ </script>
+ 

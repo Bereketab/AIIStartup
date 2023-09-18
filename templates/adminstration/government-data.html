@@ -1,0 +1,163 @@
+
+<div class="card-body" style="overflow-x: auto;">
+    <table id="example5" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Government Type</th>
+        <th>Level</th>
+        <th>Logo</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+        
+        
+      </tr>
+      </thead>
+      <tbody>
+        {% for s in government %}
+        <tr data-toggle="modal" class="government-row"  data-target="#modal-government" id="government" 
+        id="government"
+   data-id="{{s.id}}"
+   data-government-government_type="{{s.GOVERNMENT_TYPE}}"
+   data-government-government_type_other="{{s.GOVERNMENT_TYPE_other}}"
+   data-government-level="{{s.level}}"
+   data-government-description_name="{{s.description.name}}"
+   data-government-country="{{s.address.country}}"
+   data-government-region_name="{{s.address.location.region.region_name}}"
+   data-government-wereda_name="{{s.address.location.wereda_name}}"
+   data-government-phone_number="{{s.address.phone_number}}"
+   data-government-city_name="{{s.address.city_name}}"
+   
+   data-government-profile_pic="{{s.profile.profile_pic.url}}"
+   data-government-contact="{{s.profile.contact}}"
+   data-government-secondary_email="{{s.profile.secondary_email}}"
+   data-government-gender="{{s.profile.gender}}"
+   data-government-modified="{{s.profile.modified}}"
+   >
+        
+                 
+        <td>{% if s.profile.user.is_active %}
+          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          {% endif %}</td>
+        <td>{{s.description.name}}</td>
+        <td>{{s.description.description}}</td>
+        <td>{{s.description.sector}}</td>
+        <td>{{s.GOVERNMENT_TYPE}}</td>
+        <td>{{s.level}}</td>
+        <td><img src="{{s.description.logo}}"></td>
+        <td>{{s.address.country}}</td>
+        <td>{{s.address.location.region.region_name}}</td>
+        <td>{{s.address.location.wereda_name}}</td>
+        <td>{{s.address.phone_number}}</td>
+        <td>{{s.address.city_name}}</td>
+        <td>{{s.address.website}}</td>
+        <td>{{s.profile.user.first_name}}</td>
+        <td>{{s.profile.middle_name}}</td>
+        <td>{{s.profile.user.last_name}}</td>
+        <td>{{s.profile.user.username}}</td>
+        <td>{{s.profile.contact}}</td>
+        <td>{{s.profile.birth_date}}</td>
+        <td>{{s.profile.gender}}</td>
+        
+       
+      </tr>
+      {% endfor %}
+
+      
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Government Type</th>
+        <th>Level</th>
+        <th>Logo</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+  <!-- /.card-body -->
+  <script>
+    $(document).ready(function () {
+               $('.government-row').click(function () {
+                   var startupId = $(this).data('id');
+                   console.log(startupId)
+                   // Retrieve the startup data from the clicked row
+                   var governmentData = {
+    name: $(this).find('.mentor-name').text(),
+    government_type: $(this).data('government-government_type'),
+    government_type_other: $(this).data('government-government_type_other'),
+    level: $(this).data('government-level'),
+    description_name: $(this).data('government-description_name'),
+    country: $(this).data('government-country'),
+    region_name: $(this).data('government-region_name'),
+    wereda_name: $(this).data('government-wereda_name'),
+    phone_number: $(this).data('government-phone_number'),
+    city_name: $(this).data('government-city_name'),
+    profile_pic: $(this).data('government-profile_pic'),
+    contact: $(this).data('government-contact'),
+    secondary_email: $(this).data('government-secondary_email'),
+    gender: $(this).data('government-gender'),
+    modified: $(this).data('government-modified')
+};
+
+                   
+                   // Populate the modal with the startup data
+                   $('#modal-government-name').text(governmentData.name);
+$('#modal-government_type').text(governmentData.government_type);
+$('#modal-government_type_other').text(governmentData.government_type_other);
+$('#modal-level').text(governmentData.level);
+$('#modal-government-description_name').text(governmentData.description_name);
+$('#modal-government-country').text(governmentData.country);
+$('#modal-government-region_name').text(governmentData.region_name);
+$('#modal-government-wereda_name').text(governmentData.wereda_name);
+$('#modal-government-phone_number').text(governmentData.phone_number);
+$('#modal-government-city_name').text(governmentData.city_name);
+
+// Set the 'src' attribute for profile_pic if it's an image element
+if ($('#modal-government-profile-pic').is('img')) {
+    $('#modal-government-profile-pic').attr('src', governmentData.profile_pic);
+}
+
+$('#modal-government-contact').text(governmentData.contact);
+$('#modal-government-secondary_email').text(governmentData.secondary_email);
+$('#modal-government-gender').text(governmentData.gender);
+$('#modal-government-modified').text(governmentData.modified);
+                  
+                   // Populate more modal fields
+                   
+                   // Show the modal
+                   $('#modal-lg').modal('show');
+               });
+           }); 
+  </script>

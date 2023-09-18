@@ -1,0 +1,180 @@
+
+<div class="card-body" style="overflow-x: auto;">
+    <table id="example4" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Donor Type</th>
+        <th>Level</th>
+        <th>Investement Type</th>
+        <th>Max Invest Range</th>
+        <th>Logo</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+        
+</tr>
+
+          </thead>
+      <tbody>
+        {% for s in donorFunder %}
+        <tr data-toggle="modal" class="donor-row"  data-target="#modal-donor" 
+        id="donor"
+        data-id="{{s.id}}"
+        data-donor-donor_type="{{s.donor_type}}"
+        data-donor-donor_type_by_other="{{s.donor_type_by_other}}"
+        data-donor-level="{{s.level}}"
+        data-donor-investment_type="{{s.investment_type}}"
+        data-donor-investment_type_other="{{s.investment_type_other}}"
+        data-donor-max_investment_range="{{s.max_investment_range}}"
+        data-donor-description_name="{{s.description.name}}"
+        data-donor-country="{{s.address.country}}"
+        data-donor-region_name="{{s.address.location.region.region_name}}"
+        data-donor-wereda_name="{{s.address.location.wereda_name}}"
+        data-donor-phone_number="{{s.address.phone_number}}"
+        data-donor-city_name="{{s.address.city_name}}"
+        data-donor-website="{{s.address.website}}"
+        data-donor-profile_pic="{{s.profile.profile_pic.url}}"
+        data-donor-contact="{{s.profile.contact}}"
+        data-donor-secondary_email="{{s.profile.secondary_email}}"
+        data-donor-gender="{{s.profile.gender}}"
+        data-donor-modified="{{s.profile.modified}}">
+        
+        <td>{% if s.profile.user.is_active %}
+          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          {% endif %}</td>
+        <td>{{s.description.name}}</td>
+        <td>{{s.description.description}}</td>
+        <td>{{s.description.sector}}</td>
+        <td>{{s.donor_type}}</td>
+        <td>{{s.level}}</td>
+        <td>{{s.investment_type}}</td>
+        <td>{{s.max_investment_range}}</td>
+        <td><img src="{{s.description.logo}}"></td>
+        <td>{{s.address.country}}</td>
+        <td>{{s.address.location.region.region_name}}</td>
+        <td>{{s.address.location.wereda_name}}</td>
+        <td>{{s.address.phone_number}}</td>
+        <td>{{s.address.city_name}}</td>
+        <td>{{s.address.website}}</td>
+        <td>{{s.profile.user.first_name}}</td>
+        <td>{{s.profile.middle_name}}</td>
+        <td>{{s.profile.user.last_name}}</td>
+        <td>{{s.profile.user.username}}</td>
+        <td>{{s.profile.contact}}</td>
+        <td>{{s.profile.birth_date}}</td>
+        <td>{{s.profile.gender}}</td>
+        
+       
+      </tr>
+      {% endfor %}
+
+      
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Donor Type</th>
+        <th>Level</th>
+        <th>Investement Type</th>
+        <th>Max Invest Range</th>
+        <th>Logo</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+  <!-- /.card-body -->
+  <script>
+    
+    $(document).ready(function () {
+         $('.donor-row').click(function () {
+             var startupId = $(this).data('id');
+             console.log(startupId)
+             // Retrieve the startup data from the clicked row
+             var donorData = {
+    name: $(this).find('.mentor-name').text(),
+    donor_type: $(this).data('donor-donor_type'),
+    donor_type_by_other: $(this).data('donor-donor_type_by_other'),
+    level: $(this).data('donor-level'),
+    investment_type: $(this).data('donor-investment_type'),
+    investment_type_other: $(this).data('donor-investment_type_other'),
+    max_investment_range: $(this).data('donor-max_investment_range'),
+    description_name: $(this).data('donor-description_name'),
+    country: $(this).data('donor-country'),
+    region_name: $(this).data('donor-region_name'),
+    wereda_name: $(this).data('donor-wereda_name'),
+    phone_number: $(this).data('donor-phone_number'),
+    city_name: $(this).data('donor-city_name'),
+    website: $(this).data('donor-website'),
+    profile_pic: $(this).data('donor-profile_pic'),
+    contact: $(this).data('donor-contact'),
+    secondary_email: $(this).data('donor-secondary_email'),
+    gender: $(this).data('donor-gender'),
+    modified: $(this).data('donor-modified')
+};
+
+             
+             // Populate the modal with the startup data
+             $('#modal-donor-name').text(donorData.name);
+$('#modal-donor-donor_type').text(donorData.donor_type);
+$('#modal-donor-donor_type_by_other').text(donorData.donor_type_by_other);
+$('#modal-donor-level').text(donorData.level);
+$('#modal-donor-investment_type').text(donorData.investment_type);
+$('#modal-donor-investment_type_other').text(donorData.investment_type_other);
+$('#modal-donor-max_investment_range').text(donorData.max_investment_range);
+$('#modal-donor-description_name').text(donorData.description_name);
+$('#modal-donor-country').text(donorData.country);
+$('#modal-donor-region_name').text(donorData.region_name);
+$('#modal-donor-wereda_name').text(donorData.wereda_name);
+$('#modal-donor-phone_number').text(donorData.phone_number);
+$('#modal-donor-city_name').text(donorData.city_name);
+$('#modal-donor-website').text(donorData.website);
+
+// Set the 'src' attribute for profile_pic if it's an image element
+if ($('#modal-donor-profile-pic').is('img')) {
+    $('#modal-donor-profile-pic').attr('src', donorData.profile_pic);
+}
+
+$('#modal-donor-contact').text(donorData.contact);
+$('#modal-donor-secondary_email').text(donorData.secondary_email);
+$('#modal-donor-gender').text(donorData.gender);
+$('#modal-donor-modified').text(donorData.modified);
+
+             
+             // Populate more modal fields
+             
+             // Show the modal
+             $('#modal-lg').modal('show');
+         });
+     });
+ </script>  

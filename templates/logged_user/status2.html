@@ -1,0 +1,11 @@
+{% if   startup.is_connected == 1  %}
+                  <p  style="color:#0ea2bd">Pending</p>
+                 
+                  {% elif startup.is_connected == 2  %}
+                  <a style="color:white">Message</a>
+                  {% elif startup.is_connected == 3  %}
+                  <a id='connect{{startup.profile.user.id}}' > Connect</a>
+                  {% else %} 
+                  <a id='connect{{startup.profile.user.id}}' > Connect</a>
+                  </button>
+                  {% endif%}

@@ -1,0 +1,25 @@
+.categories ul a {
+    font-size: 18px;
+    font-weight: 550;
+    color: rgba(58, 71, 83, 0.7)!important;
+}
+.categories ul a:hover, 
+.categories ul a.active {
+    color: var(--color-primary)!important;
+}
+
+.categories i {
+    /* color: var(--color-primary); */
+    font-size: 24px;
+    padding-right: 12px;
+}
+.posts-list .title {
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--color-primary);
+}
+.load-more {
+    font-weight: bold;
+    color: var(--color-primary);
+    padding-top: 20px;
+}

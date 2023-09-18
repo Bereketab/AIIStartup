@@ -1,0 +1,74 @@
+{% extends './base.html' %}
+{% block content %}
+{% load static %}
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+    <!-- Sidebar -->
+    {% include './sidebar.html'%}
+
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+          {% include './navbar.html' %}
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                </div>
+
+                <!-- Content Row -->
+                <div class="row">
+                  
+<div class="card-body" style="overflow-x: auto;">
+    <table id="example6" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        {% comment %} <th>Actions</th> {% endcomment %}
+        <th>name</th>
+        <th>email</th>
+        <th>subject</th>
+        <th>message</th>
+    </tr>
+      </thead>
+      <tbody>
+        {% for s in contacted %}
+      <tr>
+        
+        {% comment %} <td>{% if s.profile.user.is_active %}
+          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          {% endif %}</td> {% endcomment %}
+        <td>{{s.name}}</td>
+        <td>{{s.email}}</td>
+        <td>{{s.subject}}</td>
+        <td>{{s.message}}</td>       
+      </tr>
+      {% endfor %}
+    
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>name</th>
+        <th>email</th>
+        <th>subject</th>
+        <th>message</th>
+        
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+  <!-- /.card-body -->
+
+                </div>
+
+
+
+{% endblock%}

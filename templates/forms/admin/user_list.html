@@ -1,0 +1,41 @@
+
+
+
+
+
+
+
+
+
+
+{% extends "./base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block body %}
+{% include './navbar.html' %}
+ <section class="dashboard">
+    <div class="top">
+       <i class="uil uil-bars sidebar-toggle"></i>
+       <div class="search-box">
+          <i class="uil uil-search"></i>
+          <input type="text" placeholder="Search here...">
+       </div>
+       <img src="{{profile_type.profile_pic.url }}" alt="">
+    </div>
+
+    <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
+        <p>hello</p>
+       
+        
+
+{% load crispy_forms_tags %}
+<ul>
+    {% for user_p in users %}
+        <li><a href="{% url 'main:connect_list_view' pk=user_p.user.pk %}">{{ user_p }}</a></li>
+    {% endfor %}
+    </ul>
+      </main>
+      
+ </section>
+
+{% endblock %}

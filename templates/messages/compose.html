@@ -1,0 +1,116 @@
+{% extends '../logged_user/base.html'%} {% block content %} 
+{% include '../logged_user/header.html' %} 
+{%load static %}
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="{% static 'add/plugins/select2/css/select2.min.css'%}">
+<link rel="stylesheet" href="{% static 'add/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css'%}">
+
+<!-- ======= Breadcrumbs ======= -->
+<div class="breadcrumbs">
+  <div class="container"></div>
+</div>
+<!-- End Breadcrumbs -->
+
+<!-- ======= Blog Section ======= -->
+<section id="blog" class="blog">
+  <div class="container" data-aos="fade-up">
+    <div class="row g-5">
+      <div class="col-lg-3">
+
+        <!-- End Blog Sidebar -->
+      </div>
+
+      <div class="col-lg-9">
+
+       <ul class="list-unstyled">
+            <div id="rep">
+              <form id="message_form"  method="post">
+                {% csrf_token %}
+                <div id="reciverSelection">
+                  <label style="padding-right: 16px;">To</label>
+                  <select class="select2"  multiple="multiple" id="tags" required data-placeholder="Select a State" style="width: 100%;">
+                </select>
+                </div>
+              <li class="bg-white mb-3">
+                <div class="form-outline">
+                  <textarea required class="form-control" id="textAreaExample2" rows="4"></textarea>
+                  <label class="form-label" for="textAreaExample2">Message</label>
+                </div>
+              </li>
+              <button type="submit" class="btn btn-info btn-rounded float-end">Send</button>
+              </form>
+            
+            </div>
+          </ul>
+  
+        
+    </div>
+  </div>
+</section>
+<!-- End Blog Section -->
+
+<script src="{% static 'add/plugins/select2/js/select2.full.min.js' %}"></script>
+<script>
+ 
+  getCurrentUserData('{{user.id}}')
+  
+  function getCurrentUserData(user){
+    
+   
+    $.ajax({
+      headers: { "X-CSRFToken":  '{{ csrf_token }}' },
+      url: {% url 'main:currentUserConnectUserList'%},
+      data: {'user':user},
+      type: "POST",
+      success: function (data) {
+        console.log(data)
+         data.forEach(function(name){
+          console.log(name.profile__user__username)
+          console.log(name.profile__user__id)
+          $('#tags').append('<option  value="'+name.profile__user__id+'">'+name.profile__user__username+'</option>');
+        })
+      },
+      error: function (data) {
+      }
+    });
+   
+  }
+ 
+
+  let loginForm = document.getElementById("message_form");
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const message = $('#textAreaExample2').val();
+    var sent_users = []
+    $("#tags option:selected").each(function()
+    {
+      sent_users.push($(this).attr('value'))
+    });   
+    console.log(sent_users)
+ $.ajax({
+      headers: { "X-CSRFToken":  '{{ csrf_token }}' },
+      url: {% url 'main:sentMessage'%},
+      data: {recievers:JSON.stringify(sent_users),"message":message},
+      type: "POST",
+      success: function (data) {
+        window.location.href = '{% url 'main:m_outbox'%}'
+      
+      },
+      error: function (data) {
+      }
+    });  
+  });
+
+  $('.select2').select2()
+
+  //Initialize Select2 Elements
+  $('.select2bs4').select2({
+    theme: 'bootstrap4'
+  })
+
+</script>
+
+{% endblock content %}

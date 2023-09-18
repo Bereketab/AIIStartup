@@ -1,0 +1,174 @@
+{% extends "./base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block body %}
+{% include './navbar.html' %}
+ <section class="dashboard">
+    <div class="top">
+       <i class="uil uil-bars sidebar-toggle"></i>
+       <div class="search-box">
+          <i class="uil uil-search"></i>
+          <input type="text" placeholder="Search here...">
+       </div>
+       <img src="{{profile_type.profile_pic.url }}" alt="">
+    </div>
+
+    <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
+        <p>hello</p>
+       
+        
+
+{% load crispy_forms_tags %}
+
+
+<form method="post" enctype="multipart/form-data">
+ 
+  {% csrf_token %}
+  <input hidden name="Startup" value="Startup">
+  <div id="basicsStartup">
+    <h4 style="color: #226470;" style="color: #226470;">Startup Basics</h4>
+  <div class="row">
+    <div class="form-group col-md-6">
+      {{ description.name|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-6">
+      {{ description.sector|as_crispy_field }}
+    </div>
+    
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6 ">
+  {{ description.description|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-6 ">
+      {{ description.logo|as_crispy_field }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-4 ">
+  {{ startup_form.establishment_year|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 ">
+      {{ startup_form.stage|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 ">
+      {{ startup_form.market_scope|as_crispy_field }}
+    </div>
+  </div>
+  
+
+  </div>
+  <div id="basicsAddress">
+    <h4 style="color: #226470;">Startup Address</h4>
+  <div class="row">
+    <div class="form-group col-md-4 ">
+      {{ region_form.region_name|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 ">
+      {{ wereda_form.wereda_name|as_crispy_field }}
+    </div>
+    
+  </div>
+  <div class="row">
+   
+    <div class="form-group col-md-3">
+      {{ address.phone_number|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ address.city_name|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ address.website|as_crispy_field }}
+    </div>
+    
+  </div>
+ 
+  
+
+  </div>
+  <div id="basicsAddress">
+    <h4 style="color: #226470;">Responsible Person</h4>
+  <div class="row">
+    <div class="form-group col-md-4 ">
+      {{ user_form.first_name|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 ">
+      {{ profile.middle_name|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 ">
+      {{ user_form.last_name|as_crispy_field }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-4 ">
+      {{ user_form.username|as_crispy_field }}
+    </div>
+    <div
+     class="form-group col-md-4 ">
+      {{ user_form.email|as_crispy_field }}
+    </div>
+    <div 
+     class="form-group col-md-4 ">
+      {{ profile.birth_date|as_crispy_field }}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-5 ">
+      {{ profile.profile_pic|as_crispy_field }}
+    </div>
+    <div
+     class="form-group col-md-3 ">
+      {{ profile.contact|as_crispy_field }}
+    </div>
+    <div
+     class="form-group col-md-3 ">
+      {{ profile.secondary_email|as_crispy_field }}
+    </div>
+    <div
+     class="form-group col-md-3 ">
+      {{ profile.gender|as_crispy_field }}
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Sign in</button>
+</form>
+
+
+      </main>
+      
+ </section>
+<script>
+    const body = document.querySelector("body"),
+      modeToggle = body.querySelector(".mode-toggle");
+      sidebar = body.querySelector("nav");
+      sidebarToggle = body.querySelector(".sidebar-toggle");
+
+let getMode = localStorage.getItem("mode");
+if(getMode && getMode ==="dark"){
+    body.classList.toggle("dark");
+}
+
+let getStatus = localStorage.getItem("status");
+if(getStatus && getStatus ==="close"){
+    sidebar.classList.toggle("close");
+}
+
+// modeToggle.addEventListener("click", () =>{
+//     body.classList.toggle("dark");
+//     if(body.classList.contains("dark")){
+//         localStorage.setItem("mode", "dark");
+//     }else{
+//         localStorage.setItem("mode", "light");
+//     }
+// });
+
+sidebarToggle.addEventListener("click", () => {
+    sidebar.classList.toggle("close");
+    if(sidebar.classList.contains("close")){
+        localStorage.setItem("status", "close");
+    }else{
+        localStorage.setItem("status", "open");
+    }
+})
+</>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% load crispy_forms_tags %}
+
+
+<div class="row">
+  <div class="form-group col-md-3">
+      {{ region_form.region_name|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ wereda_form.wereda_name|as_crispy_field }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+        {{ address_form.phone_number|as_crispy_field }}
+      </div>
+    <div class="form-group col-md-3">
+      {{ address_form.city_name|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ address_form.website|as_crispy_field }}
+    </div>
+
+  </div>
+

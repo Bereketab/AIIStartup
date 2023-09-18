@@ -1,0 +1,47 @@
+
+{% load getUser %}
+<div class="card-body" style="overflow-x: auto;">
+    <table id="example6" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        {% comment %} <th>Actions</th> {% endcomment %}
+        <th>requester</th>
+        <th>responser</th>
+        <th>time stamp</th>
+        <th>status</th>
+        <th>admin status</th>
+        <th>action</th>
+    </tr>
+      </thead>
+      <tbody>
+        {% for s in connect %}
+      <tr>
+        
+       
+        <td>{{s.requester}}</td>
+        <td>{{s.responser}}</td>
+        <td>{{s.timestamp}}</td>
+        <td>{{s.status|getStatus}}</td>  
+        <td>{{ s.status_admin|getStatus}}</td>
+        {% if s.status_admin == 1 or s.status_admin == 3 %}
+          <td><a href="{% url 'main:active_admin' s.pk %}?return_to={{ request.path }}">Activate</a></td>   
+          {% elif s.status_admin == 2 %}
+          <td><a href="{% url 'main:cancel_admin' s.pk %}?return_to={{ request.path }}">Reject</a></td>   
+          {% endif %}  
+      </tr>
+      {% endfor %}
+
+      
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>requester</th>
+        <th>responser</th>
+        <th>time stamp</th>
+        <th>status</th>
+        
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+  <!-- /.card-body -->

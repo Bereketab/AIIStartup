@@ -1,0 +1,67 @@
+
+{% comment %} {% extends '../../main/base.html' %} {% endcomment %}
+{% load crispy_forms_tags %}
+{% load static%}
+{% load my_filters %}
+
+<div class="row">
+  <div class="form-group col-md-3">
+    {{ description.name|as_crispy_field }}
+  </div>
+  <div class="form-group  col-md-3" id='secc' >
+    <div data-sec={{typeOff}} id='sec'>
+    {{ description.sector|as_crispy_field }}
+    </div>
+    <div>
+    </div>
+    </div>
+  <div class="form-group col-md-3 d-none" id={{typeOff}} name="otherS" >
+    <label for="id_other_sector" class="form-label">
+      Other Sector<span class="asteriskField">*</span>
+    </label>
+    <input
+      type="text"
+      name="other__sector"
+      maxlength="30"
+      class="textinput form-control"
+      id="id_other_sector"
+    />
+  </div>
+  
+  <div class="form-group col-md-3">
+    {{ description.logo|as_crispy_field }}
+  </div>
+</div>
+<div class="row">
+  <div class="form-group col-md-6">
+    {{ description.description|as_crispy_field }}
+  </div>
+ 
+</div>
+<script>
+
+  $(function () {
+    var sec = document.querySelectorAll("[id='sec']");
+    for (var i = 0, length = sec.length; i < length; i++) {
+      if(sec[i].dataset.sec=='incubator_'){
+        $(sec[i].parentNode).addClass('d-none')
+        $(sec[i].children[0].children[1]).prop('required',false);
+      }
+      $("#"+sec[i].dataset.sec+ " select[name=sector]").on("change", function () {
+        if (this.value === "Other") {
+          $("#id_other_sector").prop("required", function () {
+            return true;
+          });
+          $("#"+this.parentNode.parentNode.dataset.sec+" div[name=otherS]").removeClass("d-none");
+        }
+        if (this.value !== "Other") {
+          $("#"+this.parentNode.parentNode.dataset.sec+" div[name=otherS]").addClass("d-none");
+          $("#id_other_sector").prop("required", function () {
+            return false;
+          });
+        }
+      }) 
+      
+    }
+  });
+</script>

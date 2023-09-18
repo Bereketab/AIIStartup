@@ -1,0 +1,38 @@
+{% extends './base.html' %}
+{% block content %}
+{% load static %}
+{% include './header.html' %}
+<!-- ======= Hero Section ======= -->
+<section class="login-home">
+        
+    <form id="loginForm" method="POST" action="{% url 'main:login' %}">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-7">
+                <img src="{% static 'assets/img/bgg.png'%}" alt="">
+            </div>
+            <div class="col-md-5 text-box">
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Email or Username</label>
+                    <input name="username" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Password</label>
+                    <input name="password" type="password" class="form-control" id="exampleInputPassword1">
+                  </div>
+                  <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Remember me </label>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+        
+        
+      </form>
+      <a href="{% url 'main:register'%}">Register</a>
+ 
+
+  </section><!-- End Hero Section -->
+{% include './footer.html' %}
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends '../logged_user/base.html'%} {% block content %} {% include '../main/header.html' %}
+{% load my_filters%}
+{%load static %}
+{% comment %} <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> {% endcomment %}
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script src="{% static 'reconnecting-websocket.js' %}"></script>
+
+<link rel="stylesheet" href="{% static 'add/plugins/fontawesome-free/css/all.min.css'%}">
+<!-- daterange picker -->
+<link rel="stylesheet" href="{% static 'add/plugins/daterangepicker/daterangepicker.css'%}">
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="{% static 'add/plugins/icheck-bootstrap/icheck-bootstrap.min.css'%}">
+<!-- Bootstrap Color Picker -->
+<link rel="stylesheet" href="{% static 'add/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css'%}">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="{% static 'add/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css'%}">
+<!-- Select2 -->
+<link rel="stylesheet" href="{% static 'add/plugins/select2/css/select2.min.css'%}">
+<link rel="stylesheet" href="{% static 'add/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css'%}">
+<!-- Bootstrap4 Duallistbox -->
+<link rel="stylesheet" href="{% static 'add/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css'%}">
+<!-- BS Stepper -->
+<link rel="stylesheet" href="{% static 'add/plugins/bs-stepper/css/bs-stepper.min.css'%}">
+<!-- dropzonejs -->
+<link rel="stylesheet" href="{% static 'add/plugins/dropzone/min/dropzone.min.css'%}">
+<!-- Theme style -->
+<link rel="stylesheet" href="{% static 'add/dist/css/adminlte.min.css'%}">
+
+
+<style>
+  .select2-container {
+    display: block;
+    width: fit-content!important;
+}
+</style>
+
+<section style="background-color: #eee;">
+    <div class="container py-5">
+
+      <div class="row">
+  
+        <script>
+          function selectUsersEnd(e,self){
+            e.preventDefault()
+            var message_reciverer = $('.select2')
+          
+  
+            
+            var username = {{request.user.id}};
+            if(e.target.value==''){
+              
+              $('#compose').addClass('d-none')
+              $('#composeMessage').prop('disabled', true)
+
+            }
+            else{
+              
+              $('#compose').removeClass('d-none')
+              $('#composeMessage').prop('disabled', false)
+              
+            }
+          
+            
+          }
+        
+        </script>
+        
+      {{ room_name|json_script:"room-name" }}
+
+        <div class="col-md-12 col-lg-12 col-xl-12">
+          <div class="form-group" style="display:flex;margin-top: 49px;">
+            <form id="message_form">
+              {% csrf_token %}
+              <label>To</label>
+              <select class="select2" onchange="selectUsersEnd(event,this)" multiple="multiple" id="tags" required data-placeholder="Select a State" style="width: 100%;">
+              </select>
+           <input id='message' value="{{room_name_json}}" class="visually-hidden"  />
+            
+          </div>
+           <ul class="list-unstyled " id="compose">
+          
+      
+            <li class="bg-white mb-3">
+              <div class="form-outline">
+                <textarea required class="form-control" id="chat-message-input" rows="4"></textarea>
+              </div>
+            </li>
+            <button id='chat-message-submit' type="submit" class="btn btn-info btn-rounded float-end">Send</button>
+          </ul> 
+        </form>
+  
+        </div>
+  
+      </div>
+  
+    </div>
+    
+  </section>
+  <script>
+    const roomName = 'new'
+    const chatSocket = new ReconnectingWebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/chat/'
+        + roomName
+        + '/'
+    );
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+    const messageInputDom = document.querySelector('#chat-message-input');
+    chatSocket.onmessage = function(e) {
+      // JSON.parse() converts the JSON object back into the original object,
+      // then examine and act upon its contents.
+      const data = JSON.parse(e.data);
+     console.log(data['message'].message.message_body)
+      var card = document.createElement('div');
+      var img = document.createElement('img');
+      img.className="rounded-circle d-flex align-self-start me-3 shadow-1-strong"
+      img.src='https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp'
+      img.width="60"
+      var li = document.createElement('li');
+      li.className = 'd-flex justify-content-between mb-4'
+      card.className='card w-100'
+      var card_header = document.createElement('div');
+      card_header.className = 'card-header d-flex justify-content-between p-3'
+      var p_fw_bold = document.createElement('p');
+      p_fw_bold.textContent='{{request.user}}'
+      p_fw_bold.className = 'fw-bold mb-0'
+      var p_text_muted = document.createElement('p');
+      var i = document.createElement('i');
+      i.className = 'far fa-clock'
+      p_text_muted.className='text-muted small mb-0'
+      p_text_muted.textContent = '12 mins ago '
+      p_text_muted.appendChild(i)
+      var card_body = document.createElement('div')
+      card_body.className='card-body'
+      var p_mb_0 = document.createElement('p')
+      p_mb_0.addClass = 'mb-0'
+      p_mb_0.textContent = data['message'].message.message_body
+      card_header.appendChild(p_fw_bold)
+      card_header.appendChild(p_text_muted)
+      card.appendChild(card_header)
+      card_body.appendChild(p_mb_0)
+      card.appendChild(card_body)
+      li.appendChild(img)
+      li.appendChild(card)
+     
+     
+      $('#compose').prepend(li)
+    
+      
+  };
+    $( "#message_form" ).on( "submit", function( event ) {
+      var sent_users = []
+      $("#tags option:selected").each(function()
+      {
+        sent_users.push($(this).attr('id'))
+      });
+      event.preventDefault();
+      const message = messageInputDom.value;
+      messageInputDom.value = '';
+      chatSocket.send(JSON.stringify({
+          'message': message,
+          'command':'new_message',
+          'current_user':{{request.user.id}},
+          'sent_users_id':sent_users
+      }));
+    });
+  </script>
+  <script>
+   
+
+
+</script>
+  <script src="{% static 'add/plugins/jquery/jquery.min.js' %}"></script>
+  <!-- Bootstrap 4 -->
+  <script src="{% static 'add/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- Select2 -->
+  <script src="{% static 'add/plugins/select2/js/select2.full.min.js' %}"></script>
+  <!-- Bootstrap4 Duallistbox -->
+  <script src="{% static 'add/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+  <!-- InputMask -->
+  <script src="{% static 'add/plugins/moment/moment.min.js' %}"></script>
+  <script src="{% static 'add/plugins/inputmask/jquery.inputmask.min.js' %}"></script>
+  <!-- date-range-picker -->
+  <script src="{% static 'add/plugins/daterangepicker/daterangepicker.js' %}"></script>
+  <!-- bootstrap color picker -->
+  <script src="{% static 'add/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
+  <!-- Tempusdominus Bootstrap 4 -->
+  <script src="{% static 'add/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+  <!-- BS-Stepper -->
+  <script src="{% static 'add/plugins/bs-stepper/js/bs-stepper.min.js' %}"></script>
+  <!-- dropzonejs -->
+  <script src="{% static 'add/plugins/dropzone/min/dropzone.min.js' %}"></script>
+  <!-- AdminLTE App -->
+  <script src="{% static 'add/dist/js/adminlte.min.js' %}"></script>
+  <!-- AdminLTE for demo purposes -->
+  <script src="{% static 'add/dist/js/demo.js' %}"></script>
+ <script>
+
+  $(function () {
+   
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+    getCurrentUserData('{{user.id}}')
+  
+    function getCurrentUserData(user){
+      
+     
+      $.ajax({
+        headers: { "X-CSRFToken":  '{{ csrf_token }}' },
+        url: {% url 'main:currentUserConnectUserList'%},
+        data: {'user':user},
+        type: "POST",
+        success: function (data) {
+
+          data.map(x=>x.profile__user__username,x=>x.profile__user__id).forEach(function(name){
+            {% comment %} console.log(data.filter(x=>x.profile__user__username==name)[0].profile__user__id) {% endcomment %}
+            $('#tags').append('<option id="'+data.filter(x=>x.profile__user__username==name)[0].profile__user__id+'" value="'+name+'">'+name)+'</option>';
+
+          })
+        },
+        error: function (data) {
+        }
+      });
+      
+    }
+
+  })
+ 
+ </script>
+  {%endblock content %}
+

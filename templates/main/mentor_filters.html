@@ -1,0 +1,69 @@
+<div class="row gy-12 posts-list" id="to_replaced">
+    {% for mentor in mentors %}
+    <div class="col-lg-4">
+      <article class="d-flex flex-column">
+        <h2 class="title">
+          <img
+            src="{{mentor.profile.profile_pic.url}}"
+            alt=""
+            style="max-width: 50px"
+          />&nbsp;
+          <a href="blog-details.html">{{mentor.description.name}}</a>
+        </h2>
+
+        <div class="content">
+          <p>{{mentor.description.description}}</p>
+        </div>
+
+        <div
+          class="read-more mt-auto align-self-end"
+          style="display: flex"
+        >
+          <button
+            class="btn btn-open"
+            data-name="{{mentor.description.name}}"
+            data-description="{{mentor.description.description}}"
+            data-sector="{{mentor.description.sector }}=='Other'?{{startup.description.other_sector}}:{{startup.description.sector}}"
+           
+            {% if mentor.description.logo %}  data-logo="{{mentor.description.logo.url}}" {% endif %}      
+
+            data-educationallevel="{{mentor.educational_level}}"
+            data-educationalbackground="{{mentor.educational_background}}"
+            data-mentorarea="{{mentor.mentor_area}}"
+            data-airelated ="{{mentor.airelated_expriance}}"
+            data-country="{{mentor.address.country}}"
+            data-region="{{mentor.address.location.region.region_name}}"
+            data-wereda="{{mentor.address.location.wereda_name}}"
+            data-phonenumber="{{mentor.address.phone_number}}"
+            data-cityname="{{mentor.address.city_name}}"
+            data-website="{{mentor.address.website}}"
+            data-firstname="{{mentor.profile.user.first_name}}"
+            data-middilename="{{mentor.profile.middle_name}}"
+            data-lastname="{{mentor.profile.user.last_name}}"
+            data-email="{{mentor.profile.user.email}}"
+            data-gender="{{mentor.profile.gender}}"
+            {%
+            comment
+            %}
+            data-connectedwith="{{startup.profile.fr}}"
+            {%
+            endcomment
+            %}
+            onclick="openModal(event)"
+          >
+            Detail{{startup.is_connected}}
+          </button>
+          {%if user.is_authenticated %}
+          <button class="btn btn-open">
+            {% comment %} <a
+              href="{% url 'main:freind_request' startup.profile.user.id%}"
+              >Connect</a
+            > {% endcomment %}
+            </button
+          >{%endif%}
+        </div>
+      </article>
+    </div>
+    <!-- End post list item -->
+    {%endfor%}
+  </div>

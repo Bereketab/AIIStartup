@@ -1,0 +1,121 @@
+{% extends './base.html' %}
+{% block content %}
+{% load static %}
+{% include './header.html' %}
+
+
+<section class="">
+  <div class="row d-flex justify-content-center align-items-center h-100">
+    <div class="col-lg-12 col-xl-11">
+        <div class="login-home card-body p-md-5">
+          <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-6 col-xl-12 order-2 order-lg-1">
+
+              <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
+
+              <select class="form-select d-flex md-4" id="option-select">
+                <option  class="dropdown-item" value="">Select Option</option>
+                <option  class="dropdown-item" value="option-1">Startup</option>
+                <option  class="dropdown-item" value="option-2">Mentor</option>
+                <option  class="dropdown-item" value="option-3">Incubator/Hub/Acclerator</option>
+                <option  class="dropdown-item" value="option-4">Donor/Funder</option>
+                <option  class="dropdown-item" value="option-5">Government</option>
+              </select>
+              <div id="option-1-content" class="d-none">
+                {% include '../forms/startupForm.html' with utype='strap'%}
+              </div>
+
+              <div id="option-2-content" class="d-none">
+                {% include '../forms/mentorForm.html' %}
+              </div>
+
+              <div id="option-3-content" class="d-none">
+                {% include '../forms/incubatorForm.html' %}
+              </div>
+              <div id="option-4-content" class="d-none">
+                {% include '../forms/donorForm.html' %}
+              </div>
+              <div id="option-5-content" class="d-none">
+                {% include '../forms/governmentForm.html' %}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+<script>
+  let selectedSector='';
+  const newChildComboBox = document.getElementById('secc');
+  const optionSelect = document.getElementById('option-select');
+const option1Content = document.getElementById('option-1-content');
+const option2Content = document.getElementById('option-2-content');
+const option3Content = document.getElementById('option-3-content');
+const option4Content = document.getElementById('option-4-content');
+const option5Content = document.getElementById('option-5-content');
+
+optionSelect.addEventListener('change', () => {
+  let sectorComboBox = document.getElementById('id_sector'+selectedSector);
+  if (optionSelect.value === 'option-1') {
+    option1Content.classList.remove('d-none');
+    option2Content.classList.add('d-none');
+    option3Content.classList.add('d-none');
+    option4Content.classList.add('d-none');
+    option5Content.classList.add('d-none');
+    selectedSector=optionSelect.value
+
+
+  } else if (optionSelect.value === 'option-2') {
+    console.log(true)
+    option1Content.classList.add('d-none');
+    option2Content.classList.remove('d-none');
+    option3Content.classList.add('d-none');
+    option4Content.classList.add('d-none');
+    option5Content.classList.add('d-none');
+    selectedSector=optionSelect.value
+
+  } else if (optionSelect.value === 'option-3') {
+
+
+    option1Content.classList.add('d-none');
+    option2Content.classList.add('d-none');
+    option3Content.classList.remove('d-none');
+    option4Content.classList.add('d-none');
+    option5Content.classList.add('d-none');
+    selectedSector=optionSelect.value
+
+  }
+  else if (optionSelect.value === 'option-4') {
+    option1Content.classList.add('d-none');
+    option2Content.classList.add('d-none');
+    option3Content.classList.add('d-none');
+    option4Content.classList.remove('d-none');
+    option5Content.classList.add('d-none');
+    selectedSector=optionSelect.value
+
+  }
+  else if (optionSelect.value === 'option-5') {
+    option1Content.classList.add('d-none');
+    option2Content.classList.add('d-none');
+    option3Content.classList.add('d-none');
+    option4Content.classList.add('d-none');
+    option5Content.classList.remove('d-none');
+    selectedSector=optionSelect.value
+
+  }
+  else{
+    option1Content.classList.add('d-none');
+    option2Content.classList.add('d-none');
+    option3Content.classList.add('d-none');
+    option4Content.classList.add('d-none');
+    option5Content.classList.add('d-none');
+    selectedSector=optionSelect.value
+
+  }
+
+
+
+});
+</script> 
+  {% endblock content %}

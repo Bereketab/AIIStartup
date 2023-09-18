@@ -1,0 +1,604 @@
+{% extends './base.html'%} {% block content %}
+{% include './header.html' %}
+{%load static %}
+<!-- ======= Breadcrumbs ======= -->
+<div class="breadcrumbs">
+  <div class="container"></div>
+</div>
+<!-- End Breadcrumbs -->
+
+<!-- ======= Blog Section ======= -->
+<section id="blog" class="blog">
+  <div class="container" data-aos="fade-up">
+    <div class="row g-5">
+      <div class="col-lg-3">
+
+        <!-- End Blog Sidebar -->
+      </div>
+
+      <div class="col-lg-9">
+        <div class="row gy-12 posts-list">
+
+          <div class="title">
+            <p>Start-Ups</p>
+          </div>
+          {% if startups %} {% for s in startups %}
+          <div class="col-lg-4">
+            <article class="d-flex flex-column">
+              <div class="post-img">
+                <img src="{{s.profile.profile_pic.url}}" alt="" class="img-fluid" />
+              </div>
+
+              <h2 class="title">
+                <img src="{{s.logo.profile_pic.url}}" alt="" style="max-width: 50px" />&nbsp;
+                <a href="blog-details.html">{{s.description.name}}</a>
+              </h2>
+
+              <div class="content">
+                <p>
+                  {{s.description.description}}
+                </p>
+              </div>
+
+              <div class="read-more mt-auto align-self-end" style="display: flex"> 
+                <button
+                 class="btn btn-open"><a
+                 data-name="{{s.description.name}}"
+                data-description="{{s.description.description}}"
+                data-sector="{{s.description.sector }}=='Other'?{{s.description.other_sector}}:{{s.description.sector}}"
+                {% if s.logo %} data-logo="{{s.logo.url}}" {% endif %}      
+                data-establishment_year="{{s.establishment_year}}"
+                data-market_scope="{{s.market_scope}}"
+                data-stage="{{s.stage}}"
+                data-country="{{s.address.country}}"
+                data-region_name="{{s.address.location.region.region_name}}"
+                data-wereda_name="{{s.address.location.wereda_name}}"
+                data-phone_number="{{s.address.phone_number}}"
+                data-city_name="{{s.address.city_name}}"
+                data-website="{{s.address.website}}"
+                data-first_name="{{s.profile.user.first_name}}"
+                data-middle_name="{{s.profile.middle_name}}"
+                data-last_name="{{s.profile.user.last_name}}"
+                data-email="{{s.profile.user.email}}"
+                data-gender="{{s.profile.gender}}"
+                data-profile="{{s.profile.profile_pic.url}}"
+                {% if s.profile %} data-profile="{{s.profile.profile_pic.url}}" {% endif %}
+                 onclick="popUp(event)"
+                 >Detail</a></button>
+
+
+                <form onsubmit=makeConnect(event,'{{s.profile.user}}','{{s.profile.user.id}}') class>
+                  {% csrf_token %}
+                  <button class="btn btn-open ">
+                    <div id='loading{{s.profile.user.id}}' class="spinner-border d-none"
+                      style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                    {% include './status.html' %}
+                </form>
+              </div>
+            </article>
+          </div>
+          {% endfor %} {% else %}
+          <p class="title">No active startups</p>
+          {%endif%}
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">Previous</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <!-- End blog posts list -->
+        {% if startups %}
+        <a href="">
+          <p class="load-more text-end">
+            Load More <i class="bi bi-three-dots"></i></p>
+        </a>
+        {% endif %}
+
+        <div class="row gy-12 posts-list">
+          <div class="title">
+            <p>Mentors</p>
+          </div>
+
+          {% if mentors %} {% for s in mentors %}
+          <div class="col-lg-4">
+            <article class="d-flex flex-column">
+              <div class="post-img">
+                <img src="{{s.profile.profile_pic.url}}" alt="" class="img-fluid" />
+              </div>
+
+              <h2 class="title">
+                <img src="{{s.logo.profile_pic.url}}" alt="" style="max-width: 50px" />&nbsp;
+                <a href="blog-details.html">{{s.description.name}}</a>
+              </h2>
+
+              <div class="content">
+                <p>
+                  {{s.description.description}}
+                </p>
+              </div>
+
+              <div class="read-more mt-auto align-self-end" style="display: flex">
+                <button  class="btn btn-open"><a
+                  data-name="{{s.description.name}}"
+                  data-description="{{s.description.description}}"
+                  data-sector="{{s.description.sector }}=='Other'?{{startup.description.other_sector}}:{{startup.description.sector}}"
+                  {% if startup.attachments %} data-logo="{{startup.logo.url}}" {% endif %}      
+                  data-educationallevel="{{s.educational_level}}"
+                  data-educationalbackground="{{s.educational_background}}"
+                  data-mentorarea="{{s.mentor_area}}"
+                  data-airelated ="{{s.airelated_expriance}}"
+                  data-country="{{s.address.country}}"
+                  data-region="{{s.address.location.region.region_name}}"
+                  data-wereda="{{s.address.location.wereda_name}}"
+                  data-phonenumber="{{s.address.phone_number}}"
+                  data-cityname="{{s.address.city_name}}"
+                  data-website="{{s.address.website}}"
+                  data-firstname="{{s.profile.user.first_name}}"
+                  data-middilename="{{s.profile.middle_name}}"
+                  data-lastname="{{s.profile.user.last_name}}"
+                  data-email="{{s.profile.user.email}}"
+                  data-gender="{{s.profile.gender}}"
+                  onclick="popUpMentor(event)"
+                  >Detail</a></button>
+
+                <form onsubmit=makeConnect(event,'{{s.profile.user}}','{{s.profile.user.id}}')>
+                  {% csrf_token %}
+                  <button class="btn btn-open " type="submit">
+                    <div id='loading{{s.profile.user.id}}' class="spinner-border d-none"
+                      style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                    {% include './status.html' %}
+                </form>
+              </div>
+
+            </article>
+          </div>
+          <!-- End post list item -->
+          {% endfor %} {% else %}
+          <p class="title">No active mentors</p>
+          {%endif%}
+        </div>
+        <!-- End blog posts list -->
+        {% if mentors %}
+        <a href="">
+          <p class="load-more text-end">
+            Load More <i class="bi bi-three-dots"></i></p>
+        </a>
+        {% endif %}
+
+        <div class="row gy-12 posts-list">
+          <div class="title">
+            <p>Incubators</p>
+          </div>
+
+          {% if iah %} {% for s in iah %}
+          <div class="col-lg-4">
+            <article class="d-flex flex-column">
+              <div class="post-img">
+                <img src="{{s.profile.profile_pic.url}}" alt="" class="img-fluid" />
+              </div>
+
+              <h2 class="title">
+                <img src="{{s.logo.profile_pic.url}}" alt="" style="max-width: 50px" />&nbsp;
+                <a href="blog-details.html">{{s.description.name}}</a>
+              </h2>
+
+              <div class="content">
+                <p>
+                  {{s.description.description}}
+                </p>
+              </div>
+
+              <div class="read-more mt-auto align-self-end" style="display: flex">
+                <button class="btn btn-open"><a 
+                  data-name="{{ s.description.name }}"
+                  data-description="{{ s.description.description }}"
+                  data-service="{{ s.service }}"
+                  data-ownership="{{ s.ownership }}"
+                  data-ownership-other="{{ s.ownership_other }}"
+                  data-focus-industry="{{ s.focusIndustry }}"
+                  data-level="{{ s.level }}"
+                  data-funded-by="{{ s.funded_by }}"
+                  data-funded-by-other="{{ s.funded_by_other }}"
+                  data-program-duration="{{ s.program_duration }}"
+                  {% if s.attachments %} data-logo="{{s.logo.url}}" {% endif %}      
+                  data-profile-pic="{{ s.profile.profile_pic.url }}"
+                  data-contact="{{ s.profile.contact }}"
+                  data-secondary-email="{{ s.profile.secondary_email }}"
+                  data-gender="{{ s.profile.get_gender_display }}"
+                  data-address-country="{{ s.address.country }}"
+                  data-address-wereda="{{ s.address.location.wereda.wereda_name }}"
+                  data-address-phone-number="{{ s.address.phone_number }}"
+                  data-address-city-name="{{ s.address.city_name }}"
+                  data-address-website="{{ s.address.website }}"
+                  onclick="popUpIAH(event)" 
+                  >Detail</a></button>
+
+
+                <form onsubmit=makeConnect(event,'{{s.profile.user}}','{{s.profile.user.id}}')>
+                  {% csrf_token %}
+                  <button class="btn btn-open " type="submit">
+                    <div id='loading{{s.profile.user.id}}' class="spinner-border d-none"
+                      style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                    {% include './status.html' %}
+                </form>
+              </div>
+            </article>
+          </div>
+          <!-- End post list item -->
+          {% endfor %} {% else %}
+          <p class="title">No active Acclerator/Incubator/Hub</p>
+          {% endif %}
+        </div>
+        <!-- End blog posts list -->
+        {% if iah %}
+        <a href="">
+          <p class="load-more text-end">
+            Load More <i class="bi bi-three-dots"></i></p>
+        </a>
+        {%endif%}
+        <div class="row gy-12 posts-list">
+          <div class="title">
+            <p>Donor/Funder</p>
+          </div>
+          {% if df %} {% for s in df %}
+          <div class="col-lg-4">
+            <article class="d-flex flex-column">
+              <div class="post-img">
+                <img src="{{s.profile.profile_pic.url}}" alt="" class="img-fluid" />
+              </div>
+
+              <h2 class="title">
+                <img src="{{s.logo.profile_pic.url}}" alt="" style="max-width: 50px" />&nbsp;
+                <a href="blog-details.html">{{s.description.name}}</a>
+              </h2>
+
+              <div class="content">
+                <p>
+                  {{s.description.description}}
+                </p>
+              </div>
+
+              <div class="read-more mt-auto align-self-end" style="display: flex">
+                <button onclick="popUp(event)" class="btn btn-open"><a>Detail</a></button>
+
+
+                <form onsubmit=makeConnect(event,'{{s.profile.user}}','{{s.profile.user.id}}')>
+                  {% csrf_token %}
+                  <button class="btn btn-open " type="submit">
+                    <div id='loading{{s.profile.user.id}}' class="spinner-border d-none"
+                      style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                    {% include './status.html' %}
+                </form>
+              </div>
+            </article>
+          </div>
+          {% endfor %} {% else %}
+          <p class="title">No active startups</p>
+          {%endif%}
+        </div>
+        <!-- End blog posts list -->
+        {% if startups %}
+        <a href="">
+          <p class="load-more text-end">
+            Load More <i class="bi bi-three-dots"></i></p>
+        </a>
+        {% endif %}
+        <div class="row gy-12 posts-list">
+          <div class="title">
+            <p>Government Bodies</p>
+          </div>
+          {% if government %} {% for s in government %}
+          <div class="col-lg-4">
+            <article class="d-flex flex-column">
+              <div class="post-img">
+                <img src="{{s.profile.profile_pic.url}}" alt="" class="img-fluid" />
+              </div>
+
+              <h2 class="title">
+                <img src="{{s.logo.profile_pic.url}}" alt="" style="max-width: 50px" />&nbsp;
+                <a href="blog-details.html">{{s.description.name}}</a>
+              </h2>
+
+              <div class="content">
+                <p>
+                  {{s.description.description}}
+                </p>
+              </div>
+
+              <div class="read-more mt-auto align-self-end" style="display: flex">
+                <button onclick="popUp(event)" class="btn btn-open"><a>Detail</a></button>
+
+                <form onsubmit=makeConnect(event,'{{s.profile.user}}','{{s.profile.user.id}}')>
+                  {% csrf_token %}
+                  <button class="btn btn-open " type="submit">
+                    <div id='loading{{s.profile.user.id}}' class="spinner-border d-none"
+                      style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                    {% include './status.html' %}
+                </form>
+              </div>
+            </article>
+          </div>
+          {% endfor %} {% else %}
+          <p class="title">No active government</p>
+          {%endif%}
+        </div>
+        <!-- End blog posts list -->
+        {% if government %}
+        <a href="">
+          <p class="load-more text-end">
+            Load More <i class="bi bi-three-dots"></i></p>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Blog Section -->
+
+<section id="startup_modal" class="modal hidden">
+  <div class="flex">
+    <img src="{{s.logo.profile_pic.url}}" alt="user" />
+    <button class="btn-close">⨉</button>
+  </div>
+  <div>
+    <h3 id="startup-name">Company Title</h3>
+    <img src="" alt="Logo" id="startup-logo" class="image" style="max-width: 200px; max-height: 200px;">
+    <p><strong>Establishment Year:</strong> <span id="startup-establishment-year"></span></p>
+    <p><strong>Stage:</strong> <span id="startup-stage"></span></p>
+    <p><strong>Market Scope:</strong> <span id="startup-market-scope"></span></p>
+    <p><strong>Country:</strong> <span id="startup-country"></span></p>
+    <p><strong>Region Name:</strong> <span id="startup-region-name"></span></p>
+    <p><strong>Wereda Name:</strong> <span id="startup-wereda-name"></span></p>
+    <p><strong>Phone Number:</strong> <span id="startup-phone-number"></span></p>
+    <p><strong>City Name:</strong> <span id="startup-city-name"></span></p>
+    <p><strong>Website:</strong> <span id="startup-website"></span></p>
+    <p><strong>First Name:</strong> <span id="startup-first-name"></span></p>
+    <p><strong>Middle Name:</strong> <span id="startup-middle-name"></span></p>
+    <p><strong>Last Name:</strong> <span id="startup-last-name"></span></p>
+    <p><strong>Username:</strong> <span id="startup-username"></span></p>
+    <p><strong>Email:</strong> <span id="startup-email"></span></p>
+    <img src="" alt="Profile" id="startup-profile" class="image" style="max-width: 200px; max-height: 200px;">
+    <p><strong>Contact:</strong> <span id="startup-contact"></span></p>
+    
+
+  </div>
+</section>
+<section id="mentor_modal" class="modal hidden">
+  <div class="flex">
+    <img src="{{s.logo.profile_pic.url}}" alt="user" />
+    <button id="close" class="btn-close">⨉</button>
+  </div>
+  <div>
+    <h3 id="mentor-name">Company Title</h3>
+    <p>Description: <span id="mentor-description"></span></p>
+    <p>Sector: <span id="mentor-sector"></span></p>
+    <p>Educational Level: <span id="mentor-educationallevel"></span></p>
+    <p>Educational Background: <span id="mentor-educationalbackground"></span></p>
+    <p>Mentor Area: <span id="mentor-mentorarea"></span></p>
+    <p>AI-Related Experience: <span id="mentor-airelated"></span></p>
+    <p>Country: <span id="mentor-country"></span></p>
+    <p>Region: <span id="mentor-region"></span></p>
+    <p>Wereda: <span id="mentor-wereda"></span></p>
+    <p>Phone Number: <span id="mentor-phonenumber"></span></p>
+    <p>City Name: <span id="mentor-cityname"></span></p>
+    <p>Website: <span id="mentor-website"></span></p>
+    <p>First Name: <span id="mentor-firstname"></span></p>
+    <p>Middle Name: <span id="mentor-middlename"></span></p>
+    <p>Last Name: <span id="mentor-lastname"></span></p>
+    <p>Email: <span id="mentor-email"></span></p>
+    <p>Gender: <span id="mentor-gender"></span></p>
+    
+  </div>
+</section>
+
+
+<section id="iah_modal" class="modal hidden">
+  <div class="flex">
+    <img src="{{s.logo.profile_pic.url}}" alt="user" />
+    <button id="i-close" class="btn-close">⨉</button>
+  </div>
+  <div>
+    <h3 id="incubator-name">Company Title</h3>
+    <p>Description: <span id="incubator-description"></span></p>
+    <p>Service: <span id="incubator-service"></span></p>
+    <p>Ownership: <span id="incubator-ownership"></span></p>
+    <p>Ownership Other: <span id="incubator-ownership_other"></span></p>
+    <p>Focus Industry: <span id="incubator-focus_industry"></span></p>
+    <p>Level: <span id="incubator-level"></span></p>
+    <p>Funded By: <span id="incubator-funded_by"></span></p>
+    <p>Funded By Other: <span id="incubator-funded_by_other"></span></p>
+    <p>Program Duration: <span id="incubator-program_duration"></span></p>
+    <p>Image: <div id="incubator-image-container"></div></p>
+    <p>Contact: <span id="incubator-contact"></span></p>
+    <p>Secondary Email: <span id="incubator-secondary_email"></span></p>
+    <p>Gender: <span id="incubator-gender"></span></p>
+    <p>Address Country: <span id="incubator-address_country"></span></p>
+    <p>Address Wereda: <span id="incubator-address_wereda"></span></p>
+    <p>Address Phone Number: <span id="incubator-address_phone_number"></span></p>
+    <p>Address City Name: <span id="incubator-address_city_name"></span></p>
+    <p>Address Website: <span id="incubator-address_website"></span></p>
+    
+  </div>
+</section>
+
+<div class="overlay hidden"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+  function makeConnect(e, user, id) {
+    e.preventDefault()
+    $('#loading' + id).removeClass('d-none')
+    $($('#connect' + id)).addClass('d-none')
+    const csrfmiddlewaretoken = document.querySelector(
+      "[name=csrfmiddlewaretoken]"
+    ).value;
+    $.ajax({
+      headers: { "X-CSRFToken": csrfmiddlewaretoken },
+      url: {% url 'main:connect'%},
+      data: { 'userId': id },
+      dataType: 'html',
+      type: "POST",
+      success: function (data) {
+        setTimeout(() => {
+          $('#connect' + id).replaceWith('<p style="color:#0ea2bd"> connect request sent !</p>')
+          $('#loading' + id).addClass('d-none')
+        }, "3000");
+      },
+      error: function (data) {
+      }
+    });
+  }
+  const modal = document.getElementById("startup_modal");
+  const mentor_modal = document.getElementById("mentor_modal");
+  const iah_modal = document.getElementById("iah_modal");
+
+  const overlay = document.querySelector(".overlay");
+  const openModalBtn = document.querySelector(".btn-open");
+  const closeModalBtn = document.querySelector(".btn-close");
+  const closeMentorModalBtn = document.getElementById("close");
+  const closeIAHModalBtn = document.getElementById("i-close");
+  const closeModal = function () {
+    iah_modal.classList.add("hidden");
+    mentor_modal.classList.add("hidden");
+    modal.classList.add("hidden");
+    overlay.classList.add("hidden");
+  };
+  closeModalBtn.addEventListener("click", closeModal);
+  closeMentorModalBtn.addEventListener("click", closeModal);
+  closeIAHModalBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", closeModal);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
+  
+  function popUp(e){
+    e.preventDefault()
+    $("#startup-logo").attr("src", e.target.dataset.logo);
+$("#startup-name").text(e.target.dataset.name);
+$("#startup-establishment-year").text(e.target.dataset.establishment_year);
+$("#startup-stage").text(e.target.dataset.stage);
+$("#startup-market-scope").text(e.target.dataset.market_scope);
+$("#startup-country").text(e.target.dataset.country);
+$("#startup-region-name").text(e.target.dataset.region_name);
+$("#startup-wereda-name").text(e.target.dataset.wereda_name);
+$("#startup-phone-number").text(e.target.dataset.phone_number);
+$("#startup-city-name").text(e.target.dataset.city_name);
+$("#startup-website").text(e.target.dataset.website);
+$("#startup-first-name").text(e.target.dataset.first_name);
+$("#startup-middle-name").text(e.target.dataset.middle_name);
+$("#startup-last-name").text(e.target.dataset.last_name);
+$("#startup-username").text(e.target.dataset.username);
+$("#startup-email").text(e.target.dataset.email);
+$("#startup-profile").attr("src", e.target.dataset.profile);
+$("#startup-contact").text(e.target.dataset.contact);
+
+modal.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+  }
+  function popUpMentor(e){
+    e.preventDefault()
+    $("#mentor-name").text(e.target.dataset.name);
+$("#mentor-description").text(e.target.dataset.description);
+$("#mentor-sector").text(e.target.dataset.sector);
+$("#mentor-educationallevel").text(e.target.dataset.educationallevel);
+$("#mentor-educationalbackground").text(e.target.dataset.educationalbackground);
+$("#mentor-mentorarea").text(e.target.dataset.mentorarea);
+$("#mentor-airelated").text(e.target.dataset.airelated);
+$("#mentor-country").text(e.target.dataset.country);
+$("#mentor-region").text(e.target.dataset.region);
+$("#mentor-wereda").text(e.target.dataset.wereda);
+$("#mentor-phonenumber").text(e.target.dataset.phonenumber);
+$("#mentor-cityname").text(e.target.dataset.cityname);
+$("#mentor-website").text(e.target.dataset.website);
+$("#mentor-firstname").text(e.target.dataset.firstname);
+$("#mentor-middlename").text(e.target.dataset.middlename);
+$("#mentor-lastname").text(e.target.dataset.lastname);
+$("#mentor-email").text(e.target.dataset.email);
+$("#mentor-gender").text(e.target.dataset.gender);
+
+mentor_modal.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+  }
+  function popUpIAH(e){
+    e.preventDefault()
+    $("#incubator-name").text(e.target.dataset.name);
+    console.log(e.target.dataset)
+
+$("#incubator-description").text(e.target.dataset.description);
+$("#incubator-service").text(e.target.dataset.service);
+$("#incubator-ownership").text(e.target.dataset.ownership);
+$("#incubator-ownership_other").text(e.target.dataset.ownership_other);
+$("#incubator-focus_industry").text(e.target.dataset.focusIndustry);
+$("#incubator-level").text(e.target.dataset.level);
+$("#incubator-funded_by").text(e.target.dataset.funded_by);
+$("#incubator-funded_by_other").text(e.target.dataset.funded_by_other);
+$("#incubator-program_duration").text(e.target.dataset.program_duration);
+// Assuming you have a data-src attribute for the image
+$("#incubator-image-container").html('<img src="' + e.target.dataset.image + '" alt="Image">');
+$("#incubator-contact").text(e.target.dataset.contact);
+$("#incubator-secondary_email").text(e.target.dataset.secondary_email);
+$("#incubator-gender").text(e.target.dataset.gender);
+$("#incubator-address_country").text(e.target.dataset.address_country);
+$("#incubator-address_wereda").text(e.target.dataset.address_wereda);
+$("#incubator-address_phone_number").text(e.target.dataset.address_phone_number);
+$("#incubator-address_city_name").text(e.target.dataset.address_city_name);
+$("#incubator-address_website").text(e.target.dataset.address_website);
+
+iah_modal.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+  }
+  {% if messages %}
+  $(document).ready(function() {
+    var errorMessage = '';
+
+    {% for message in messages %}
+      // Remove HTML tags and line breaks from error messages
+      var formattedMessage = '{{ message | striptags | linebreaksbr }}';
+      errorMessage += formattedMessage;
+    {% endfor %}
+
+    var icon = 'error'; // Default icon
+
+    // Map Django message levels to SweetAlert icons
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        icon = 'error';
+      {% elif message.tags == 'success' %}
+        icon = 'success';
+      {% elif message.tags == 'warning' %}
+        icon = 'warning';
+      {% elif message.tags == 'info' %}
+        icon = 'info';
+      {% endif %}
+    {% endfor %}
+
+    Swal.fire({
+      title: icon+'!',
+      html: errorMessage, // Use 'html' option to render HTML content
+      icon: icon, // Set the SweetAlert icon based on message level
+      confirmButtonText: 'OK'
+    });
+  });
+{% endif %}
+</script>
+
+{% endblock content%}

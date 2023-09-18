@@ -1,0 +1,195 @@
+
+<div class="card-body" style="overflow-x: auto;">
+    <table id="example2" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Educational Level</th>
+        <th>Educational Background</th>
+        <th>Mentor Area</th>
+        <th>AI related Expriance</th>
+        <th>Logo</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+        
+        
+      </tr>
+      </thead>
+      <tbody>
+        {% for s in mentors %}
+        <p hidden class="mentor-name" >{{s.description.name}}</p>
+
+        <tr data-toggle="modal" class="mentor-row"  data-target="#modal-mentor" id="obj" 
+        data-id="{{s.id}}"
+   data-first_name="{{s.profile.user.first_name}}"
+   data-middle_name="{{s.profile.middle_name}}"
+   data-last_name="{{s.profile.user.last_name}}"
+   data-username="{{s.profile.user.username}}"
+   data-email="{{s.profile.user.email}}"
+   data-birth_date="{{s.profile.birth_date}}"
+   data-profile="{{s.profile.profile_pic.url}}"
+   data-contact="{{s.profile.contact}}"
+   data-secondary_email="{{s.profile.secondary_email}}"
+   data-gender="{{s.profile.gender}}"
+   data-modified="{{s.profile.modified}}"
+   data-mentor_area="{{s.mentor_area}}"
+   data-educational_level="{{s.educational_level}}"
+   data-educational_level_other="{{s.educational_level_other}}"
+   data-educational_background="{{s.educational_background}}"
+   data-educational_background_other="{{s.educational_background_other}}"
+   data-airelated_expriance="{{s.airelated_expriance}}"
+   data-description_name="{{s.description.name}}"
+   data-country="{{s.address.country}}"
+   data-region_name="{{s.address.location.region.region_name}}"
+   data-wereda_name="{{s.address.location.wereda_name}}"
+   data-phone_number="{{s.address.phone_number}}"
+   data-city_name="{{s.address.city_name}}"
+   data-website="{{s.address.website}}"
+   {% if s.attachments %} data-attachments="{{s.attachments.url}}" {% endif %}      
+   >
+        
+        <td>{% if s.profile.user.is_active %}
+          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          {% endif %}</td>
+        <td>{{s.description.name}}</td>
+        <td>{{s.description.description}}</td>
+        <td>{{s.description.sector}}</td>
+        <td>{{s.educational_level}}</td>
+        <td>{{s.educational_background}}</td>
+        <td>{{s.mentor_area}}</td>
+        <td>{{s.airelated_expriance}}</td>
+        <td><img src="{{s.description.logo}}"></td>
+        <td>{{s.address.country}}</td>
+        <td>{{s.address.location.region.region_name}}</td>
+        <td>{{s.address.location.wereda_name}}</td>
+        <td>{{s.address.phone_number}}</td>
+        <td>{{s.address.city_name}}</td>
+        <td>{{s.address.website}}</td>
+        <td>{{s.profile.user.first_name}}</td>
+        <td>{{s.profile.middle_name}}</td>
+        <td>{{s.profile.user.last_name}}</td>
+        <td>{{s.profile.user.username}}</td>
+        <td>{{s.profile.contact}}</td>
+        <td>{{s.profile.birth_date}}</td>
+        <td>{{s.profile.gender}}</td>
+        
+       
+      </tr>
+      {% endfor %}
+
+      
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>Educational Level</th>
+        <th>Educational Background</th>
+        <th>Mentor Area</th>
+        <th>AI related Expriance</th>
+        <th>Logo</th>
+        <th>Country</th>
+        <th>Region</th>
+        <th>Woreda</th>
+        <th>Phone Number</th>
+        <th>City Name</th>
+        <th>Website</th>
+        <th>First Name</th>
+        <th> Middile Name</th>
+        <th> Last Name</th>
+        <th> Username</th>
+        <th> Contact</th>
+        <th> BirthDate</th>
+        <th> Gender</th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+  
+  <script>
+    $(document).ready(function () {
+         $('.mentor-row').click(function () {
+             var startupId = $(this).data('id');
+             console.log(startupId)
+             var mentorData = {
+    name: $(this).data('description_name'),
+    id: $(this).data('id'),
+    firstName: $(this).data('first_name'),
+    middleName: $(this).data('middle_name'),
+    lastName: $(this).data('last_name'),
+    username: $(this).data('username'),
+    email: $(this).data('email'),
+    birthDate: $(this).data('birth_date'),
+    profilePic: $(this).data('profile'),
+    contact: $(this).data('contact'),
+    secondaryEmail: $(this).data('secondary_email'),
+    gender: $(this).data('gender'),
+    modified: $(this).data('modified'),
+    mentorArea: $(this).data('mentor_area'),
+    educationalLevel: $(this).data('educational_level'),
+    educationalLevelOther: $(this).data('educational_level_other'),
+    educationalBackground: $(this).data('educational_background'),
+    educationalBackgroundOther: $(this).data('educational_background_other'),
+    airelatedExpriance: $(this).data('airelated_expriance'),
+    attachments: $(this).data('attachments'),
+    descriptionName: $(this).data('description_name'),
+    country: $(this).data('country'),
+    regionName: $(this).data('region_name'),
+    weredaName: $(this).data('wereda_name'),
+    phoneNumber: $(this).data('phone_number'),
+    cityName: $(this).data('city_name'),
+    website: $(this).data('website')
+};
+console.log(mentorData.attachments)
+$('#modal-mentor-name').text(mentorData.name);
+$('#modal-mentor-id').text(mentorData.id);
+
+$('#modal-mentor-first-name').text(mentorData.firstName);
+$('#modal-mentor-middle-name').text(mentorData.middleName);
+$('#modal-mentor-last-name').text(mentorData.lastName);
+$('#modal-mentor-username').text(mentorData.username);
+$('#modal-mentor-email').text(mentorData.email);
+$('#modal-mentor-birth-date').text(mentorData.birthDate);
+$('#modal-mentor-profile-pic').attr('src', mentorData.profilePic); // Assuming it's an image source
+$('#modal-mentor-contact').text(mentorData.contact);
+$('#modal-mentor-secondary-email').text(mentorData.secondaryEmail);
+$('#modal-mentor-gender').text(mentorData.gender);
+$('#modal-mentor-modified').text(mentorData.modified);
+$('#modal-mentor-mentor-area').text(mentorData.mentorArea);
+$('#modal-mentor-educational-level').text(mentorData.educationalLevel);
+$('#modal-mentor-educational-level-other').text(mentorData.educationalLevelOther);
+$('#modal-mentor-educational-background').text(mentorData.educationalBackground);
+$('#modal-mentor-educational-background-other').text(mentorData.educationalBackgroundOther);
+$('#modal-mentor-airelated-expriance').text(mentorData.airelatedExpriance);
+$('#modal-mentor-attachments').attr('src', mentorData.attachments); // Assuming it's an attachment source
+$('#modal-mentor-description-name').text(mentorData.descriptionName);
+$('#modal-mentor-country').text(mentorData.country);
+$('#modal-mentor-region-name').text(mentorData.regionName);
+$('#modal-mentor-wereda-name').text(mentorData.weredaName);
+$('#modal-mentor-phone-number').text(mentorData.phoneNumber);
+$('#modal-mentor-city-name').text(mentorData.cityName);
+$('#modal-mentor-website').text(mentorData.website);
+
+             $('#modal-mentor').modal('show');
+         });
+     });
+ </script>
+ 
+  <!-- /.card-body -->

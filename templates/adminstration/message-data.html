@@ -1,0 +1,45 @@
+
+{% load getUser %}
+<div class="card-body" style="overflow-x: auto;">
+    <table id="example7" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        {% comment %} <th>Actions</th> {% endcomment %}
+        <th>sender</th>
+        <th>message</th>
+        <th>recipents</th>
+        <th>time stamp</th>
+        <th>status</th>
+    </tr>
+      </thead>
+      <tbody>
+        {% for s in message %}
+      <tr>
+        
+        {% comment %} <td>{% if s.profile.user.is_active %}
+          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          {% endif %}</td> {% endcomment %}
+        <td>{{s.sender}}</td>
+        <td>{{s.message}}</td>
+        <td>{{s.recipients|getUser}}</td>
+        <td>{{s.creation_date}}</td>
+        <td>{{s.disabled}}</td>       
+      </tr>
+      {% endfor %}
+
+      
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>sender</th>
+        <th>message</th>
+        <th>recipents</th>
+        <th>time stamp</th>
+        <th>status</th>
+        
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+  <!-- /.card-body -->

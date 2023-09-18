@@ -1,0 +1,11 @@
+{% if   s.is_connected == 1  %}
+                  <p  style="color:#0ea2bd">Pending</p>
+                 
+                  {% elif s.is_connected == 2  %}
+                  <a  href="{% url 'main:m_compose' %}?return_to={{ s.profile.user.id }}" style="color:white">Message</a>
+                  {% elif s.is_connected == 3  %}
+                  <a id='connect{{s.profile.user.id}}' > Connect</a>
+                  {% else %} 
+                  <a id='connect{{s.profile.user.id}}' > Connect</a>
+                  </button>
+                  {% endif%}

@@ -1,0 +1,167 @@
+{% comment %} 
+
+{% extends '../logged_user/base.html'%} {% block content %} 
+{% include '../logged_user/header.html' %} 
+  {%load static %}
+
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="{% static 'add/plugins/select2/css/select2.min.css'%}">
+<link rel="stylesheet" href="{% static 'add/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css'%}">
+
+{%load my_filters %}
+
+  <section style="background-color: #eee;">
+    <div class="container py-5">
+  
+      <div class="row">
+  
+        <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
+  
+          <h5 class="font-weight-bold mb-3 text-center text-lg-start">Member</h5>
+  
+          <div class="card">
+            <div class="card-body">
+  
+              <ul class="list-unstyled mb-0">
+                {% for m in chats %}
+                {{m.recipients|upto}}
+                <li onclick=getMessageDetail("{{m.recipients|upto}}") class="p-2 border-bottom" style="background-color: #eee;">
+                  <a  class="d-flex justify-content-between">
+                    <div class="d-flex flex-row">
+                      <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp" alt="avatar"
+                        class="rounded-circle d-flex align-self-center me-3 shadow-1-strong" width="60">
+                      <div class="pt-1">
+                        <p class="fw-bold mb-0">{{m.from_user.username}}</p>
+                        <p class="small text-muted">{{m.message_body}}</p>
+                      </div>
+                    </div>
+                    <div class="pt-1">
+                      {% comment %} <p class="small text-muted mb-1">{{ m.timestamp|timesince|upto:','}} ago</p> {% endcomment %}
+                    </div>
+                  </a>
+                </li>
+                {%endfor%}
+              <script>
+                  //Initialize Select2 Elements
+ 
+                function getMessageDetail(recievers){
+                  console.log(recievers)
+                  $.ajax({
+                    url: {% url 'main:message_detail'%},
+                    data: {'recievers':recievers},
+                    dataType: 'html',
+                    type: "POST",
+                    success: function (data) {
+                       $('#rep').replaceWith(data) 
+                   
+                      
+                      
+                  
+                      
+                    },
+                    error: function (data) {
+                    }
+                  }); 
+                }
+              </script>
+              </ul>
+  
+  
+            </div>
+          </div>
+  
+        </div>
+  
+        <div class="col-md-6 col-lg-7 col-xl-8">
+  
+          <ul class="list-unstyled">
+            <div id="rep">
+              <form id="message_form"  method="post">
+                {% csrf_token %}
+                <div id="reciverSelection">
+                  <label style="padding-right: 16px;">To</label>
+                  <select class="select2"  multiple="multiple" id="tags" required data-placeholder="Select a State" style="width: 100%;">
+                </select>
+                </div>
+              <li class="bg-white mb-3">
+                <div class="form-outline">
+                  <textarea required class="form-control" id="textAreaExample2" rows="4"></textarea>
+                  <label class="form-label" for="textAreaExample2">Message</label>
+                </div>
+              </li>
+              <button type="submit" class="btn btn-info btn-rounded float-end">Send</button>
+              </form>
+            
+            </div>
+          </ul>
+  
+        </div>
+  
+      </div>
+  
+    </div>
+  </section>
+  
+  <script src="{% static 'add/plugins/select2/js/select2.full.min.js' %}"></script>
+<script>
+  $('.select2').select2()
+
+  //Initialize Select2 Elements
+  $('.select2bs4').select2({
+    theme: 'bootstrap4'
+  })
+  getCurrentUserData('{{user.id}}')
+  
+  function getCurrentUserData(user){
+    
+   
+    $.ajax({
+      headers: { "X-CSRFToken":  '{{ csrf_token }}' },
+      url: {% url 'main:currentUserConnectUserList'%},
+      data: {'user':user},
+      type: "POST",
+      success: function (data) {
+      
+        data.map(x=>x.profile__user__username,x=>x.profile__user__id).forEach(function(name){
+          {% comment %} console.log(data.filter(x=>x.profile__user__username==name)[0].profile__user__id) {% endcomment %}
+          $('#tags').append('<option id="'+data.filter(x=>x.profile__user__username==name)[0].profile__user__id+'" value="'+name+'">'+name)+'</option>';
+
+        })
+      },
+      error: function (data) {
+      }
+    });
+    
+  }
+ 
+
+  let loginForm = document.getElementById("message_form");
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const message = $('#textAreaExample2').val();
+    var sent_users = []
+    $("#tags option:selected").each(function()
+    {
+      sent_users.push($(this).attr('id'))
+    });   
+    $.ajax({
+      headers: { "X-CSRFToken":  '{{ csrf_token }}' },
+      url: {% url 'main:sentMessage'%},
+      data: {recievers:JSON.stringify(sent_users),"message":message},
+      type: "POST",
+      success: function (data) {
+        {% comment %} $('replace') {% endcomment %}
+        $('#replace').replaceWith(data)
+        console.log(data)
+      
+      },
+      error: function (data) {
+      }
+    });
+  });
+
+</script>
+{% endblock content%} {% endcomment %}

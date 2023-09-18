@@ -1,0 +1,95 @@
+
+{% load crispy_forms_tags %}
+  {% if typeOf == 'DonorFunder' %}
+<div class="row">
+    <div class="form-group col-md-3">
+
+      {{ form.donor_type|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.level|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.investment_type|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.max_investment_range|as_crispy_field }}
+    </div>
+  </div>
+  {% endif %}
+  {% if typeOf == 'Startup' %}
+<div class="row">
+    <div class="form-group col-md-3">
+
+      {{ form.establishment_year|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.market_scope|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.stage|as_crispy_field }}
+    </div>
+ 
+  </div>
+  {% endif %}
+  {% if typeOf == 'Mentor' %}
+<div class="row">
+    <div class="form-group col-md-3">
+
+      {{ form.educational_level|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.educational_background|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.mentor_area|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.airelated_expriance|as_crispy_field }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-3">
+
+      {{ form.attachments|as_crispy_field }}
+    </div>
+  </div>
+  {% endif %}
+  {% if typeOf == 'IncubatorsAccelatorsHub' %}
+<div class="row">
+    <div class="form-group col-md-3">
+
+      {{ form.service|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.ownership|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.focusIndustry|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.level|as_crispy_field }}
+    </div>
+  </div>
+  <div class="row">
+    
+    <div class="form-group col-md-3">
+      {{ form.funded_by|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.attachments|as_crispy_field }}
+    </div>
+  </div>
+  {% endif %}
+  {% if typeOf == 'Government' %}
+<div class="row">
+    <div class="form-group col-md-3">
+
+      {{ form.GOVERNMENT_TYPE|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-3">
+      {{ form.level|as_crispy_field }}
+    </div>
+  
+  </div>
+  {% endif %}

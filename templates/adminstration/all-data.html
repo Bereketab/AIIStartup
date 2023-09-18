@@ -1,0 +1,71 @@
+
+{% load getUser %}
+<div class="card-body" style="overflow-x: auto;">
+    <table id="example7" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>profile type</th>
+       
+        
+        
+      </tr>
+      </thead>
+      <tbody>
+
+      
+        {% for s in merged_objects %}
+        <tr data-toggle="modal" class="all-row"  data-target="#modal-lg" id="obj" data-id="{{s.id}}">
+        
+        <td>{% if s.profile.user.is_active %}
+          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          {% endif %}</td>
+        <td>{{s.description.name}}</td>
+        <td>{{s.description.description}}</td>
+        <td>{{s.description.sector}}</td>
+        <td>{{s|getModel}}</td>
+        
+       
+      </tr>
+      {% endfor %}
+
+      
+      </tbody>
+      <tfoot>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Sector</th>
+        <th>profile type</th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+  <!-- /.card-body -->
+  $(document).ready(function () {
+    $('.all-row').click(function () {
+        var startupId = $(this).data('id');
+        console.log(startupId)
+        // Retrieve the startup data from the clicked row
+        var startupData = {
+            name: $(this).find('.mentor-name').text(),
+            description: $(this).find('.mentor-description').text(),
+            sector: $(this).find('.mentor-sector').text(),
+            // Add more properties here
+        };
+        
+        // Populate the modal with the startup data
+        $('#modal-name').text(startupData.name);
+        $('#modal-description').text(startupData.description);
+        $('#modal-sector').text(startupData.sector);
+        // Populate more modal fields
+        
+        // Show the modal
+        $('#modal-lg').modal('show');
+    });
+}); 

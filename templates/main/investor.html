@@ -1,0 +1,783 @@
+{% extends './base.html' %} 
+{% block content %} {% load static %} 
+{% include './header.html' %} 
+<script
+  type="text/javascript"
+  src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
+></script>
+<script
+  type="text/javascript"
+  src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
+></script>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+/>
+<div class="breadcrumbs">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <h2>Network</h2>
+         <ol>
+     <li><a class="active" href="{% url 'main:networks' 'startup' %}" >Startups</a></li>
+        <li><a href="{% url 'main:networks' 'mentor' %}" >Mentors</a></li>
+        <li><a href="{% url 'main:networks' 'incub' %}" >Incubators</a></li>
+        <li><a href="{% url 'main:networks' 'hub' %}" >Hubs</a></li>
+        <li><a href="{% url 'main:networks' 'acclerator' %}" >Acclerators</a></li>
+        <li><a href="{% url 'main:networks' 'doner' %}" >Doners</a></li>
+        <li><a href="{% url 'main:networks' 'government' %}" >Gov't Bodies</a></li>
+      </ol>
+    </div>
+  </div>
+</div>
+<script>
+  function getContent(typeOf){
+    var getContentByName = '{% url 'main:get_content' 12345 %}';
+  var url_mask = getContentByName.replace("12345", typeOf);
+    $.ajax({
+      
+      url: url_mask,
+      {% comment %} data: JSON.stringify(obj), {% endcomment %}
+      dataType: 'html',
+      type: "POST",
+      success: function (data) {
+        {% comment %} window.history.replaceState(null, null, 'hello'); {% endcomment %}
+        $('#filter_replace').replaceWith(data)
+        console.log(data)
+        
+      },
+      error: function (data) {
+      }
+    });
+    
+  }
+</script>
+<!-- End Breadcrumbs -->
+
+<!-- ======= Blog Section ======= -->
+<section id="blog" class="blog">
+  <div class="container" data-aos="fade-up">
+    <div class="row g-5" id="filter_replace">
+      <div class="col-lg-3">
+        
+
+        <div class="sidebar" style="justify-content: center;display: grid;">
+          <div class="sidebar-item search-form">
+            
+          </div>
+          <!-- End sidebar search formn-->
+
+          <div class="sidebar-item categories">
+            <form id="filterForm" style="justify-content: center;display: grid;" method="post">
+              {% csrf_token %}
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+              {% for filter in filters %}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingOne">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#flush-{{ forloop.counter }}"
+                    aria-expanded="false"
+                    aria-controls="flush-{{ forloop.counter }}"
+                  >
+                    <a href="#"
+                      ><i class="bi bi-plus-circle"></i
+                      >&nbsp;&nbsp;{{filter}}</a
+                    >
+                  </button>
+                </h2>
+                <div
+                  id="flush-{{ forloop.counter }}"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="flush-headingOne"
+                  data-bs-parent="#accordionFlushExample"
+                >
+                  <div class="accordion-body">
+                    <ul>
+                      
+                     
+
+
+                     
+                   
+
+
+                      {%if filter == 'Level' %}
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Pre-Startup"
+                          value="pre"
+                          name='level'
+                        />
+                        <label class="form-check-label" for="Pre-Startup"
+                          >Pre-Startup</label
+                        >
+                      </div>
+
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Mid-Startup"
+                          value="mid"
+                          name='level'
+                        />
+                        <label class="form-check-label" for="Mid-Startup"
+                          >Mid-Startup</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Early Trsction"
+                          value="early"
+                          name='level'
+                        />
+                        <label class="form-check-label" for="Early Trsction"
+                          >Early Trsction</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="In-Market"
+                          value="post"
+                          name='level'
+                        />
+                        <label class="form-check-label" for="In-Market"
+                          >In-Market</label
+                        >
+                      </div>
+                    
+                      {% endif %}
+                     {%if filter == 'Name' %}
+                      <li>
+                        <div class="checkboxes" ></div>
+                        <script>
+                          let a = "abcdefghijklmnopqrstuvwxyz".split("");
+
+                          a.forEach((l) => {
+                            l = l.toUpperCase();
+                            jQuery(".checkboxes")
+                              .append(`<input name='name' value='${l}' id='${l}' data-search-term="${l}" type="checkbox">
+                              <label class= "inline-chheckbox" for="${l}">${l}</label>`);
+                          });
+                        </script>
+                      </li>
+                      {%endif%}
+                      {%if filter == 'Donor Type' %}
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="self"
+                          value="self_"
+                          name='funded_by'
+                        />
+                        <label class="form-check-label" for="self"
+                          >self</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="NGO"
+                          value="nGO"
+                          name='funded_by'
+                        />
+                        <label class="form-check-label" for="NGO"
+                          >NGO</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Grant"
+                          value="grant"
+                          name='funded_by'
+                        />
+                        <label class="form-check-label" for="Grant"
+                          >Grant</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="International"
+                          value="International"
+                          name='funded_by'
+                        />
+                        <label class="form-check-label" for="International"
+                          >International</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Other"
+                          value="Other"
+                          name='funded_by'
+                        />
+                        <label class="form-check-label" for="Other"
+                          >Other</label
+                        >
+                      </div>
+                      {%endif%}
+                      {%if filter == 'Investment Type' %}
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="selection"
+                          value="selection"
+                          name='investment_type'
+                        />
+                        <label class="form-check-label" for="selection"
+                          >selection</label
+                        >
+                      </div>
+                       <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="finance"
+                          value="finance"
+                          name='investment_type'
+                        />
+                        <label class="form-check-label" for="finance"
+                          >finance</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="working_space"
+                          value="working_space"
+                          name='investment_type'
+                        />
+                        <label class="form-check-label" for="working_space"
+                          >working space</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="other"
+                          value="other"
+                          name='investment_type'
+                        />
+                        <label class="form-check-label" for="other"
+                          >other</label
+                        >
+                      </div>
+                      {% endif %}
+                      {%if filter == 'Sector' %}
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Entertainment"
+                          value="Entertainment"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Entertainment"
+                          >Entertainment</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Energy"
+                          value="Energy"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Energy"
+                          >Energy</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Logistics"
+                          value="Logistics"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Logistics"
+                          >Logistics</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Construction"
+                          value="Construction"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Construction"
+                          >Construction</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Health"
+                          value="Health"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Health"
+                          >Health</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Manufacturing"
+                          value="Manufacturing"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Manufacturing"
+                          >Manufacturing</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Cleaning"
+                          value="Cleaning"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Cleaning"
+                          >Cleaning</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Education"
+                          value="Education"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Education"
+                          >Education</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Finance"
+                          value="Finance"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Finance"
+                          >Finance</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Tourism"
+                          value="Tourism"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Tourism"
+                          >Tourism</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="IT"
+                          value="IT"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="IT"
+                          >IT</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Agriculture"
+                          value="Agriculture"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Agriculture"
+                          >Agriculture</label
+                        >
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="Other"
+                          value="Other"
+                          name='sector'
+                        />
+                        <label class="form-check-label" for="Other"
+                          >Other</label
+                        >
+                      </div>
+                      
+
+                      {%endif%}
+                      {%if filter == 'Address' %}
+                      <select class="form-select" name="regionn" aria-label="Select Region" id="reg_">
+                        <option value="" selected>Select Region</option>
+                        <option value="Addis Ababa">Addis Ababa</option>
+                        <option value="Afar">Afar</option>
+                        <option value="Amhara">Amhara</option>
+                        <option value="Benishangul-Gumuz">Benishangul-Gumuz</option>
+                        <option value="Dire Dawa">Dire Dawa</option>
+                        <option value="Gambela">Gambela</option>
+                        <option value="Harari">Harari</option>
+                        <option value="Oromia">Oromia</option>
+                        <option value="Somali">Somali</option>
+                        <option value="Sidama">Sidama</option>
+                        <option value="SNNP">SNNP</option>
+                        <option value="Tigray">Tigray</option>
+
+                      </select>
+                      <br>
+                      <select class="form-select" aria-label="Default select example" name='wereda' id="wer_">
+                        <option value="" selected>Select Wereda</option>
+                      </select>
+                      {%endif%}
+                      <script>
+                        $(function () {
+                          $("#reg_").on("change", function () {
+                            
+                          geoserver_url= "http://localhost:8080/geoserver/cms/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=cms%3AETH_adm2&maxFeatures=10000&outputFormat=application%2Fjson"
+                          var self=this
+                          $.getJSON( geoserver_url, function( data ) {
+                              var items = [];
+                              var wereda_names = data.features.filter(x=>x.properties['NAME_1']==self.value);
+                              $("#wer_").empty()
+                              $("#wer_").append('<option value="">select wereda</option>')
+                             wereda_names.forEach(function(e){
+                              $("#wer_").append('<option value="'+e.properties['NAME_2']+'">'+e.properties['NAME_2'])+'</option>';
+                              
+                             })
+                            });
+              
+                          })
+                          $('input[name="daterange"]').daterangepicker(
+                            {
+                              opens: "left",
+                              autoUpdateInput: true,
+                              locale:{
+                                format: 'YYYY-MM-DD'
+                              }
+                      },
+                           
+                          ).val('');
+                        });
+                      </script>
+                      
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              {%endfor%}
+            </div>
+            <button type='submit' class="btn btn-primary"  id="filter">filter</button>
+          </form>
+          <script>
+            $( "#filterForm" ).on( "submit", function( event ) {
+              
+              event.preventDefault();
+              
+
+                var obj = {}; // Define object
+
+                // Loop over all checkboxes
+                $('input[type="checkbox"]:checked').each(function() {
+                    var name = $(this).attr('name'); // Get name of this checkbox
+                
+                    if (obj[name]) {
+                        obj[name].push($(this).val()); // Push value
+                    } else {
+                        obj[name] = [$(this).val()]; // Create array and push value
+                    }
+                });
+                
+                
+                obj[$('#reg_').attr('name')]=$('#reg_').val()
+                obj[$('#wer_').attr('name')]=$('#wer_').val()
+                const csrfmiddlewaretoken = document.querySelector(
+                  "[name=csrfmiddlewaretoken]"
+                ).value;
+                console.log(obj);
+              $.ajax({
+                  headers: { "X-CSRFToken": csrfmiddlewaretoken },
+                  url: '{% url "main:filter" "iah" %}',
+                  data: JSON.stringify(obj),
+                  dataType: 'html',
+                  type: "POST",
+                  success: function (data) {
+                    $('#to_replaced').replaceWith(data)
+                    {% comment %} console.log(data) {% endcomment %}
+                    
+                  },
+                  error: function (data) {
+                  }
+                }); 
+                
+            });
+          </script>
+          </div>
+          <!-- End sidebar categories-->
+        </div>
+        <!-- End Blog Sidebar -->
+      </div>
+     
+
+      <div class="col-lg-9" >
+        <div class="row gy-12 posts-list" id="to_replaced">
+          {% for i in investor %}
+          <div class="col-lg-4">
+            <article class="d-flex flex-column">
+              <h2 class="title">
+                <img
+                  src="{{i.profile.profile_pic.url}}"
+                  alt=""
+                  style="max-width: 50px"
+                />&nbsp;
+                <a href="blog-details.html">{{i.description.name}}</a>
+              </h2>
+
+              <div class="content">
+                <p>{{i.description.description}}</p>
+              </div>
+
+              <div
+                class="read-more mt-auto align-self-end"
+                style="display: flex"
+              >
+                <button
+                  class="btn btn-open"
+                  data-name="{{i.description.name}}"
+                  data-description="{{i.description.description}}"
+                  data-sector="{{i.description.sector }}=='Other'?{{startup.description.other_sector}}:{{startup.description.sector}}"
+                  {% comment %} data-logo="{{i.description.logo.url}}" {% endcomment %}
+                  data-educationallevel="{{i.educational_level}}"
+                  data-educationalbackground="{{i.educational_background}}"
+                  data-iarea="{{i.i_area}}"
+                  data-airelated ="{{i.airelated_expriance}}"
+                  data-country="{{i.address.country}}"
+                  data-region="{{i.address.location.region.region_name}}"
+                  data-wereda="{{i.address.location.wereda_name}}"
+                  data-phonenumber="{{i.address.phone_number}}"
+                  data-cityname="{{i.address.city_name}}"
+                  data-website="{{i.address.website}}"
+                  data-firstname="{{i.profile.user.first_name}}"
+                  data-middilename="{{i.profile.middle_name}}"
+                  data-lastname="{{i.profile.user.last_name}}"
+                  data-email="{{i.profile.user.email}}"
+                  data-gender="{{i.profile.gender}}"
+                  {%
+                  comment
+                  %}
+                  data-connectedwith="{{startup.profile.fr}}"
+                  {%
+                  endcomment
+                  %}
+                  onclick="openModal(event)"
+                >
+                  Detail{{startup.is_connected}}
+                </button>
+                {%if user.is_authenticated %}
+                <button class="btn btn-open">
+                  {% comment %} <a
+                    href="{% url 'main:freind_request' startup.profile.user.id%}"
+                    >Connect</a
+                  > {% endcomment %}
+                  </button
+                >{%endif%}
+              </div>
+            </article>
+          </div>
+          <!-- End post list item -->
+          {%endfor%}
+        </div>
+        <!-- End blog posts list -->
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Blog Section -->
+
+<style>
+  .accordion-button {
+    border-radius: 4px !important;
+  }
+
+  .modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 450px;
+    padding: 1.3rem;
+    height: auto;
+    /* position: absolute; */
+    z-index: 2;
+    left: 35%;
+    top: 20%;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+  }
+
+  .modal .flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal input {
+    padding: 0.7rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9em;
+  }
+
+  .modal p {
+    font-size: 0.9rem;
+    color: #777;
+    margin: 0.4rem 0 0.2rem;
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+  }
+
+  .btn-close {
+    transform: translate(10px, -20px);
+    padding: 0.5rem 0.7rem;
+    background: #eee;
+    border-radius: 50%;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(1px);
+    z-index: 1;
+  }
+
+  .hidden {
+    display: none;
+  }
+  .flex img {
+    max-width: 60px !important;
+    border-radius: 50%;
+    margin-left: 40%;
+    margin-bottom: 20px;
+  }
+</style>
+<section class="modal hidden">
+  <div class="flex">
+    <img src="assets/img/AII-logo.png" alt="user" />
+    <button class="btn-close">⨉</button>
+  </div>
+  <div>
+    <h3>Company Title</h3>
+    <p>Sector:<span id="sect"></span></p>
+    <p>Establishement year</p>
+    <p>Stage</p>
+    <p>Market Scope</p>
+    <p>Description</p>
+  </div>
+</section>
+
+<div class="overlay hidden"></div>
+
+<script>
+  const modal = document.querySelector(".modal");
+  const overlay = document.querySelector(".overlay");
+  const openModalBtn = document.querySelector(".btn-open");
+  const closeModalBtn = document.querySelector(".btn-close");
+  const closeModal = function () {
+    modal.classList.add("hidden");
+    overlay.classList.add("hidden");
+  };
+  closeModalBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", closeModal);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
+  const openModal = function (e) {
+    
+    $("#sect").text(e.target.dataset.sector);
+    modal.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+  };
+</script>
+<script>
+  $(document).ready(function () {
+    // $.validator.addMethod('confirmPass', function(value) {
+    //   if($('#startup_password').val() == $('#startup_password2').val()){ return true; } return false;
+    // }, "Password and confirm password fields do not match");
+    // $("#startupForm").validate()
+    // $("#connectForm").validate()
+    jQuery("#connectForm").validate();
+    $("#connectForm").submit(function (event) {
+      event.preventDefault();
+      const csrfmiddlewaretoken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+      ).value;
+
+      var fd = new FormData();
+      fd.append("connect", $(".connect").attr("id"));
+
+      $.ajax({
+        headers: { "X-CSRFToken": csrfmiddlewaretoken },
+        url: '{% url "main:connect" %}',
+        data: fd,
+        processData: false,
+        contentType: false,
+        type: "POST",
+        success: function (data) {
+          
+        },
+        error: function (data) {
+        }
+      });
+    });
+  });
+</script>
+
+{% endblock content %}

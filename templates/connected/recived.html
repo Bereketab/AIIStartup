@@ -1,0 +1,63 @@
+{% extends '../logged_user/base.html'%} {% block content %} 
+{% include '../logged_user/header.html' %} 
+{%load static %}
+{% load getUser %}
+
+<!-- ======= Breadcrumbs ======= -->
+<div class="breadcrumbs">
+  <div class="container"></div>
+</div>
+<!-- End Breadcrumbs -->
+
+<!-- ======= Blog Section ======= -->
+<section id="blog" class="blog">
+  <div class="container" data-aos="fade-up">
+    <div class="row g-5">
+      <div class="col-lg-3">
+
+        <!-- End Blog Sidebar -->
+      </div>
+
+      <div class="col-lg-9">
+
+        <table id="example" class="table table-striped table-bordered" style="width:100%">
+          <thead>
+              <tr>
+                  <th>No</th>
+                  <th>Sender</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                  <th>Admin Status</th>
+                  <th>Action</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for c in connect %}
+              <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ c.requester }}</td>
+                  <td>{{ c.timestamp }}</td>
+                  
+                  <td>{{ c.status|getStatuss}}</td>
+                  <td>{{ c.status_admin|getStatus}}</td>
+                  <td><a href="{% url 'main:cancel' c.pk %}?return_to={{ request.path }}">cancel</a>
+                    {% if c.status == 1 %}
+                    <a href="{% url 'main:accept' c.pk %}?return_to={{ request.path }}">accept</a></td>
+                    {% elif c.status == 2 or c.status == 3 %}
+                    <p>you accepted request but waiting for admin approval</p>
+                    {% endif %}
+              </tr>
+              {% endfor %}
+           
+          </tbody>
+       
+      </table>
+        
+    </div>
+  </div>
+</section>
+<!-- End Blog Section -->
+
+
+{% endblock content%}
+

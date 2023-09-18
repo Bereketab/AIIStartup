@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Startups Admin - Dashboard</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'sb/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    {% comment %} <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet"> {% endcomment %}
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'sb/css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+  {% block content%}
+
+  {% endblock %}
+ 
+    <script src="{% static 'sb/plugins/jquery/jquery.min.js' %}"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{% static 'sb/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/chart.js/Chart.min.js' %}"></script>
+
+    <!-- DataTables  & Plugins -->
+    <script src="{% static 'sb/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'sb/plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'sb/plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static 'sb/dist/js/adminlte.min.js' %}"></script>
+    <!-- AdminLTE for demo purposes -->
+     <script src="{% static 'sb/dist/js/demo.js' %}"></script> 
+</body>
+<script>
+// Function to show image in full screen
+function showFullScreenImage(imgSrc) {
+  const overlay = document.querySelector('.overlay');
+  const imgContainer = document.querySelector('.img-container');
+  const img = document.createElement('img');
+
+  // Set the image source
+  img.src = imgSrc;
+  img.classList.add('full-screen-img');
+
+  // Append the image to the container
+  imgContainer.innerHTML = '';
+  imgContainer.appendChild(img);
+
+  // Show the overlay
+  overlay.style.display = 'block';
+
+  // Close the full-screen image when overlay is clicked
+  overlay.addEventListener('click', () => {
+    overlay.style.display = 'none';
+  });
+}
+
+// Add click event listeners to your images
+const modalLogo = document.getElementById('modal-logo');
+const modalProfile = document.getElementById('modal-profile');
+const modalMentorLogo = document.getElementById('modal-mentor-logo');
+const modalMentorProfile = document.getElementById('modal-mentor-profile-pic');
+const modalIncubatorLogo = document.getElementById('modal-incubator-logo');
+const modalIncubatorProfile = document.getElementById('modal-incubator-profile-pic');
+
+modalLogo.addEventListener('click', () => {
+  const imgSrc = modalLogo.getAttribute('src');
+  showFullScreenImage(imgSrc);
+});
+
+modalProfile.addEventListener('click', () => {
+  const imgSrc = modalProfile.getAttribute('src');
+  showFullScreenImage(imgSrc);
+});
+modalMentorLogo.addEventListener('click', () => {
+  const imgSrc = modalMentorLogo.getAttribute('src');
+  showFullScreenImage(imgSrc);
+});
+
+modalMentorProfile.addEventListener('click', () => {
+  const imgSrc = modalMentorProfile.getAttribute('src');
+  showFullScreenImage(imgSrc);
+});
+
+
+modalIncubatorProfile.addEventListener('click', () => {
+  console.log(true)
+  const imgSrc = modalMentorProfile.getAttribute('src');
+  showFullScreenImage(imgSrc);
+});
+
+</script>
+
+  <script>
+            $(function () {
+              $("#startup1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+              }).buttons().container().appendTo('#startup1_wrapper .col-md-6:eq(0)');
+              $('#startup1').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+              });
+
+
+
+              $("#example2").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+              }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+              $('#example2').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+              });
+
+              $("#example3").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+              }).buttons().container().appendTo('#example3_wrapper .col-md-6:eq(0)');
+              $('#example3').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+              });
+
+
+              $("#example4").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+              }).buttons().container().appendTo('#example4_wrapper .col-md-6:eq(0)');
+              $('#example4').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+              });
+
+
+
+
+              $("#example5").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+              }).buttons().container().appendTo('#example5_wrapper .col-md-6:eq(0)');
+              $('#example5').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+              });
+
+              
+              $("#example6").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+              }).buttons().container().appendTo('#example6_wrapper .col-md-6:eq(0)');
+              $('#example6').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+              });
+
+              $("#example7").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+              }).buttons().container().appendTo('#example7_wrapper .col-md-6:eq(0)');
+              $('#example7').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+              });
+            });
+
+
+
+
+
+
+            var areaChartOptions = {
+      maintainAspectRatio : false,
+      responsive : true,
+      legend: {
+        display: false
+      },
+      scales: {
+        xAxes: [{
+          gridLines : {
+            display : false,
+          }
+        }],
+        yAxes: [{
+          gridLines : {
+            display : false,
+          }
+        }]
+      }
+    }
+
+
+
+    var areaChartData = {
+      labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [
+        {
+          label               : 'Digital Goods',
+          backgroundColor     : 'rgba(60,141,188,0.9)',
+          borderColor         : 'rgba(60,141,188,0.8)',
+          pointRadius          : false,
+          pointColor          : '#3b8bba',
+          pointStrokeColor    : 'rgba(60,141,188,1)',
+          pointHighlightFill  : '#fff',
+          pointHighlightStroke: 'rgba(60,141,188,1)',
+          data                : [28, 48, 40, 19, 86, 27, 90]
+        },
+        {
+          label               : 'Electronics',
+          backgroundColor     : 'rgba(210, 214, 222, 1)',
+          borderColor         : 'rgba(210, 214, 222, 1)',
+          pointRadius         : false,
+          pointColor          : 'rgba(210, 214, 222, 1)',
+          pointStrokeColor    : '#c1c7d1',
+          pointHighlightFill  : '#fff',
+          pointHighlightStroke: 'rgba(220,220,220,1)',
+          data                : [65, 59, 80, 81, 56, 55, 40]
+        },
+      ]
+    }
+
+   
+
+
+
+
+            var lineChartCanvas = $('#lineChart').get(0).getContext('2d')
+    var lineChartOptions = jQuery.extend(true, {}, areaChartOptions)
+    var lineChartData = jQuery.extend(true, {}, areaChartData)
+    lineChartData.datasets[0].fill = false;
+    lineChartData.datasets[1].fill = false;
+    lineChartOptions.datasetFill = false
+
+    var lineChart = new Chart(lineChartCanvas, { 
+      type: 'line',
+      data: lineChartData, 
+      options: lineChartOptions
+    })
+
+
+
+    
+          </script>
+          
+
+</html>

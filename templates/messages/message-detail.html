@@ -1,0 +1,114 @@
+{% extends '../logged_user/base.html'%} {% block content %} 
+{% include '../logged_user/header.html' %} 
+{%load static %}
+{% load getUser %}
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+{% load humanize %}
+<!-- ======= Breadcrumbs ======= -->
+<div class="breadcrumbs">
+  <div class="container"></div>
+</div>
+<!-- End Breadcrumbs -->
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<!-- ======= Blog Section ======= -->
+<section id="blog" class="blog">
+  <div class="container" data-aos="fade-up">
+    <div class="row g-5">
+      <div class="col-lg-3">
+
+        <!-- End Blog Sidebar -->
+      </div>
+
+      <div class="col-lg-9">
+
+ 
+        <ul class="list-unstyled">
+            {% for d in detail_message %}
+            {% if d.sender == user %}
+            <li class="d-flex justify-content-between mb-4">
+              <img src="{{d.sender.id|getUserPic}}" alt="avatar"
+                class="rounded-circle d-flex align-self-start me-3 shadow-1-strong" width="60">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between p-3">
+                  <p class="fw-bold mb-0">{{d.sender}}</p>
+                  <p class="text-muted small mb-0"><i class="far fa-clock"></i> {{d.creation_date|naturaltime}}</p>
+                </div>
+                <div class="card-body">
+                  <p class="mb-0">
+                    {{d.message}}
+                  </p>
+                </div>
+              </div>
+            </li>
+            {% else %}
+            <li class="d-flex justify-content-between mb-4">
+              <div class="card w-100">
+                <div class="card-header d-flex justify-content-between p-3">
+                  <p class="fw-bold mb-0">{{d.sender}}</p>
+                  <p class="text-muted small mb-0"><i class="far fa-clock"></i> {{d.creation_date|naturaltime}}</p>
+                </div>
+                <div class="card-body">
+                  <p class="mb-0">
+                   {{d.message}}
+                  </p>
+                </div>
+              </div>
+              <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-5.webp" alt="avatar"
+                class="rounded-circle d-flex align-self-start ms-3 shadow-1-strong" width="60">
+            </li>
+            {%endif%}
+          {%endfor%}
+            <li class="bg-white mb-3">
+              <form id="message_form"  method="post">
+                {% csrf_token %}
+        
+              <li class="bg-white mb-3">
+                <div class="form-outline">
+                  <textarea required class="form-control" id="textAreaExample2" rows="4"></textarea>
+                  <label class="form-label" for="textAreaExample2">Message</label>
+                </div>
+              </li>
+              <button type="submit" class="btn btn-info btn-rounded float-end">Send</button>
+              </form>
+          </ul>
+       
+      
+        
+    </div>
+  </div>
+</section>
+<!-- End Blog Section -->
+<script>
+
+
+  let loginForm = document.getElementById("message_form");
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const message = $('#textAreaExample2').val();
+    var sent_users = decodeURIComponent(document.location.href.split('/')[5])
+   
+    console.log(sent_users)
+  $.ajax({
+      headers: { "X-CSRFToken":  '{{ csrf_token }}' },
+      url: {% url 'main:sentMessagefromDetail'%},
+      data: {recievers:sent_users,"message":message},
+      type: "POST",
+      success: function (data) {
+        window.location.href = '{% url 'main:m_outbox'%}'
+      
+      },
+      error: function (data) {
+      }
+    });
+  });
+
+
+</script>
+
+{% endblock content%}
+

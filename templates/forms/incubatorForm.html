@@ -1,0 +1,111 @@
+
+
+{% load crispy_forms_tags %}
+
+
+    <form id="incubator_" method="post" enctype="multipart/form-data">
+     
+      {% csrf_token %}
+      <input hidden name="Startup" value="Incubator/Hub/Accelerator">
+      <div id="basicsIncubator/Hub/Acclerator">
+        <h4 style="color: #226470;" style="color: #226470;">Incubator/Hub/Acclerator Basics</h4>
+        {% include "./basic/basic.html" with typeOff="incubator_"  %}
+      <div class="row">
+
+        <div class="form-group col-md-4">
+          {{ incubator_form.service|as_crispy_field }}
+        </div>
+        <div class="form-group col-md-4">
+          {{ incubator_form.ownership|as_crispy_field }}
+        </div>
+        <div class="form-group col-md-2 d-none" id="other_ownership">
+          <label for="id_other_ownership" class="form-label">
+            Specify Ownership<span class="asteriskField">*</span>
+          </label>
+          <input
+            type="text"
+            name="other__ownership"
+            maxlength="30"
+            class="textinput form-control"
+            id="id_other_ownership"
+          />
+        </div>
+        <div class="form-group col-md-4 " style='max-height: 120px;overflow: auto;'>
+          {{ incubator_form.focusIndustry|as_crispy_field }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-3">
+          {{ incubator_form.level|as_crispy_field }}
+        </div>
+        <div class="form-group col-md-2">
+          {{ incubator_form.funded_by|as_crispy_field }}
+        </div>
+        <div class="form-group col-md-2 d-none" id="other_funded_by">
+          <label for="id_other_funded_by" class="form-label">
+            Specify Fund<span class="asteriskField">*</span>
+          </label>
+          <input
+            type="text"
+            name="other__funded_by"
+            maxlength="30"
+            class="textinput form-control"
+            id="id_other_funded_by"
+          />
+        </div>
+        <div class="form-group col-md-3">
+            {{ incubator_form.program_duration|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-3">
+            {{ incubator_form.attachments|as_crispy_field }}
+          </div>
+  
+       
+        </div>
+
+      </div>
+      <div id="basicsAddress">
+        <h4 style="color: #226470;">Incubator/Hub/Acclerator Address</h4>
+        {% include "./basic/address.html" with typeOff="incubator_" %}
+     
+      </div>
+      <div id="basicsResponsible">
+        <h4>Responsible Person</h4>
+        {% include "./basic/person.html"  %}
+    </div>
+      <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+<script>
+  $("#id_funded_by").on("change", function () {
+    console.log(this.value)
+    if (this.value === "Other") {
+      $("#id_other_funded_by").prop("required", function () {
+        return true;
+        
+      });
+      $("#other_funded_by").removeClass("d-none");
+    }
+    if (this.value !== "Other") {
+      $("#other_funded_by").addClass("d-none");
+      $("#id_other_funded_by").prop("required", function () {
+        return false;
+      });
+    }
+  })
+  $("#id_ownership").on("change", function () {
+    console.log(this.value)
+    if (this.value === "Other") {
+      $("#id_other_ownership").prop("required", function () {
+        return true;
+        
+      });
+      $("#other_ownership").removeClass("d-none");
+    }
+    if (this.value !== "Other") {
+      $("#other_ownership").addClass("d-none");
+      $("#id_other_ownership").prop("required", function () {
+        return false;
+      });
+    }
+  })
+</script>

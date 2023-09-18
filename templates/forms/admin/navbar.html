@@ -1,0 +1,59 @@
+{% load static %}
+<nav>
+    <div class="logo-name">
+       <div class="logo-image">
+        <a href="/home/">  <img src="{% static 'admin/images/logo.jpeg' %}" alt=""></a>
+       </div>
+       <span class="logo_name">{{profile_type.group}} Account</span>
+    </div>
+    <div class="menu-items">
+       <ul class="nav-links">
+          <li class=""><a href="#">
+             <i class="uil uil-estate"></i>
+             <span class="link-name">Dahsboard</span>
+             </a>
+          </li>
+          <li><a href="{% url 'main:explore' %}">
+            <i class="uil uil-users-alt"></i>
+             <span class="link-name">Explore</span>
+             </a>
+          </li>
+          <li><a href="#">
+            <i class="uil uil-user-md"></i>
+             <span class="link-name">Messages</span>
+             </a>
+          </li>
+          <li><a href="{% url 'main:connect_list' %}">
+            <i class="fa-solid fa-gavel"></i>
+             <span class="link-name">Connects</span>
+             </a>
+          </li>
+          <li><a href="{% url 'main:users_list'%}">
+            <i class="uil uil-building"></i>
+             <span class="link-name">Users List</span>
+             </a>
+          </li>
+          <li><a href="{% url 'main:profile' %}">
+            <i class="fa-solid fa-people-robbery"></i>
+             <span class="link-name">My Profile</span>
+             </a>
+          </li>
+       </ul>
+       <ul class="logout-mode">
+          <li><a href="{% url 'main:logout' %}">
+             <i class="uil uil-signout"></i>
+             <span class="link-name">Logout</span>
+             </a>
+          </li>
+          <!-- <li class="mode">
+             <a href="#">
+             <i class="uil uil-moon"></i>
+             <span class="link-name">Dark Mode</span>
+             </a>
+             <div class="mode-toggle">
+                <span class="switch"></span>
+             </div>
+          </li> -->
+       </ul>
+    </div>
+ </nav>
