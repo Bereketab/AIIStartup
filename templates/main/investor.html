@@ -579,31 +579,23 @@
                 <button
                   class="btn btn-open"
                   data-name="{{i.description.name}}"
+                  data-donor_type="{{i.donor_type}}"
+                  data-level="{{i.level}}"
+                  data-investment_type="{{i.investment_type}}"
                   data-description="{{i.description.description}}"
-                  data-sector="{{i.description.sector }}=='Other'?{{startup.description.other_sector}}:{{startup.description.sector}}"
-                  {% comment %} data-logo="{{i.description.logo.url}}" {% endcomment %}
-                  data-educationallevel="{{i.educational_level}}"
-                  data-educationalbackground="{{i.educational_background}}"
-                  data-iarea="{{i.i_area}}"
-                  data-airelated ="{{i.airelated_expriance}}"
+                  data-sector="{% if i.description.sector == 'Other' %}{{ i.description.other_sector }}{% else %}{{ i.description.sector }}{% endif %}"                 
+                  data-profile="{{i.profile.profile_pic.url}}"
                   data-country="{{i.address.country}}"
                   data-region="{{i.address.location.region.region_name}}"
                   data-wereda="{{i.address.location.wereda_name}}"
                   data-phonenumber="{{i.address.phone_number}}"
-                  data-cityname="{{i.address.city_name}}"
                   data-website="{{i.address.website}}"
                   data-firstname="{{i.profile.user.first_name}}"
                   data-middilename="{{i.profile.middle_name}}"
                   data-lastname="{{i.profile.user.last_name}}"
                   data-email="{{i.profile.user.email}}"
-                  data-gender="{{i.profile.gender}}"
-                  {%
-                  comment
-                  %}
-                  data-connectedwith="{{startup.profile.fr}}"
-                  {%
-                  endcomment
-                  %}
+                  data-gender="{% if iah_.profile.gender == '0' %}{{'Male'}}{% else %}{{'Female'}}{% endif %}"   
+            
                   onclick="openModal(event)"
                 >
                   Detail{{startup.is_connected}}
@@ -708,16 +700,21 @@
 </style>
 <section class="modal hidden">
   <div class="flex">
-    <img src="assets/img/AII-logo.png" alt="user" />
+    <img src=""id="profile" alt="user" />
     <button class="btn-close">⨉</button>
   </div>
   <div>
-    <h3>Company Title</h3>
-    <p>Sector:<span id="sect"></span></p>
-    <p>Establishement year</p>
-    <p>Stage</p>
-    <p>Market Scope</p>
-    <p>Description</p>
+    <h3 id="name">Company Title</h3>
+    <p>Description: <span id="description"></span></p>
+    <p>Doner type: <span id="donor_type"></span></p>
+    <p>Level: <span id="level"></span></p>
+    <p>Investment Type: <span id="investment_type"></span></p>
+    <p>Email: <span id="email"></span></p>
+    <p>Country: <span id="address_country"></span></p>
+    <p>Region: <span id="region"></span></p>
+    <p>Wereda: <span id="address_wereda"></span></p>
+    <p>Phone Number: <span id="address_phone_number"></span></p>
+    <p>Website: <span id="address_website"></span></p>
   </div>
 </section>
 
@@ -740,8 +737,39 @@
     }
   });
   const openModal = function (e) {
-    
-    $("#sect").text(e.target.dataset.sector);
+//     name
+// description
+// sector
+// profile
+// educationallevel
+// educationalbackground
+// iarea
+// airelated
+// country
+// region
+// wereda
+// phonenumber
+// cityname
+// website
+// firstname
+// middilename
+// lastname
+// email
+// gender
+    $("#name").text(e.target.dataset.name);
+    $("#description").text(e.target.dataset.description);
+    $("#donor_type").text(e.target.dataset.donor_type);
+    $("#level").text(e.target.dataset.level);
+    $("#investment_type").text(e.target.dataset.investment_type);
+    $("#email").text(e.target.dataset.email);
+    $("#address_country").text(e.target.dataset.address_country);
+    $("#region").text(e.target.dataset.region);
+    $("#address_wereda").text(e.target.dataset.address_wereda);
+    $("#address_phone_number").text(e.target.dataset.address_phone_number);
+    $("#address_website").text(e.target.dataset.address_website);
+    $("#profile").attr('src',e.target.dataset.profile);
+
+
     modal.classList.remove("hidden");
     overlay.classList.remove("hidden");
   };

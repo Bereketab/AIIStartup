@@ -28,6 +28,7 @@ urlpatterns = [
     re_path(r'^users/cancel/(?P<id>[\w-]+)/$', views.cancel_friend_request),
     re_path(r'^users/accept/(?P<id>[\w-]+)/$', views.accept_friend_request),
     re_path(r'^users/delete/(?P<id>[\w-]+)/$', views.delete_friend_request),
+    # path('compose/', views.ComposeMessageView.as_view(), name='m_compose'),
     path('message/compose', views.m_compose, name='m_compose'),
     path('message/inbox', views.m_inbox, name='m_inbox'),
     path('message/outbox', views.m_outbox, name='m_outbox'),

@@ -3,16 +3,16 @@
 {% include './header.html' %}
 <script
   type="text/javascript"
-  src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
+  src="{% static 'js/moment.min.js' %}"
 ></script>
 <script
   type="text/javascript"
-  src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
+  src="{% static 'js/daterangepicker.min.js' %}"
 ></script>
 <link
   rel="stylesheet"
   type="text/css"
-  href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+  href="{% static 'css/daterangepicker.css' %}"
 />
 <div class="breadcrumbs">
   <div class="container">
@@ -405,10 +405,7 @@
                           ).val('');
                         });
                       </script>
-                      {% comment %}
-                      <li><a href="#">List one</a></li>
-                      <li><a href="#">List one</a></li>
-                      {% endcomment %}
+                    
                     </ul>
                   </div>
                 </div>
@@ -492,8 +489,7 @@
                   class="btn btn-open"
                   data-name="{{startup.description.name}}"
                   data-description="{{startup.description.description}}"
-                  data-sector="{{startup.description.sector }}=='Other'?{{startup.description.other_sector}}:{{startup.description.sector}}"
-                  {% if startup.logo %} data-logo="{{startup.logo.url}}" {% endif %}      
+                  data-sector="{% if startup.description.sector == 'Other' %}{{ startup.description.other_sector }}{% else %}{{ startup.description.sector }}{% endif %}"                  {% if startup.logo %} data-logo="{{startup.logo.url}}" {% endif %}      
                   data-establishment_year="{{startup.establishment_year}}"
                   data-market_scope="{{startup.market_scope}}"
                   data-stage="{{startup.stage}}"
@@ -505,10 +501,13 @@
                   data-website="{{startup.address.website}}"
                   data-first_name="{{startup.profile.user.first_name}}"
                   data-middle_name="{{startup.profile.middle_name}}"
+                  data-username="{{startup.profile.user.username}}"
                   data-last_name="{{startup.profile.user.last_name}}"
                   data-email="{{startup.profile.user.email}}"
                   data-gender="{{startup.profile.gender}}"
                   data-profile="{{startup.profile.profile_pic.url}}"
+                  data-contact="{{startup.profile.contact}}"
+                  
                   {% if startup.profile %} data-profile="{{startup.profile.profile_pic.url}}" {% endif %}      
 
                   onclick="openModal(event)"
@@ -537,106 +536,25 @@
 </section>
 <!-- End Blog Section -->
 
-<style>
-  .accordion-button {
-    border-radius: 4px !important;
-  }
 
-  .modal {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.4rem;
-    width: 450px;
-    padding: 1.3rem;
-    height: auto;
-    /* position: absolute; */
-    z-index: 2;
-    left: 35%;
-    top: 20%;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 15px;
-  }
-
-  .modal .flex {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .modal input {
-    padding: 0.7rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 0.9em;
-  }
-
-  .modal p {
-    font-size: 0.9rem;
-    color: #777;
-    margin: 0.4rem 0 0.2rem;
-  }
-
-  button {
-    cursor: pointer;
-    border: none;
-    font-weight: 600;
-  }
-
-  .btn-close {
-    transform: translate(10px, -20px);
-    padding: 0.5rem 0.7rem;
-    background: #eee;
-    border-radius: 50%;
-  }
-
-  .overlay {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(1px);
-    z-index: 1;
-  }
-
-  .hidden {
-    display: none;
-  }
-  .flex img {
-    max-width: 60px !important;
-    border-radius: 50%;
-    margin-left: 40%;
-    margin-bottom: 20px;
-  }
-</style>
 <section class="modal hidden">
   <div class="flex">
-    <img src="assets/img/AII-logo.png" alt="user" />
+    <img src="" id="profile"  alt="user" />
     <button class="btn-close">⨉</button>
   </div>
   <div>
     <img src="" alt="Logo" id="logo" class="image" style="max-width: 200px; max-height: 200px;">
 <p><strong>Name:</strong> <span id="name"></span></p>
-<p><strong>Establishment Year:</strong> <span id="establishment-year"></span></p>
-<p><strong>Stage:</strong> <span id="stage"></span></p>
-<p><strong>Market Scope:</strong> <span id="market-scope"></span></p>
+<p><strong>Sector:</strong> <span id="sector"></span></p>
 <p><strong>Country:</strong> <span id="country"></span></p>
 <p><strong>Region Name:</strong> <span id="region-name"></span></p>
 <p><strong>Wereda Name:</strong> <span id="wereda-name"></span></p>
 <p><strong>Phone Number:</strong> <span id="phone-number"></span></p>
-<p><strong>City Name:</strong> <span id="city-name"></span></p>
 <p><strong>Website:</strong> <span id="website"></span></p>
 <p><strong>First Name:</strong> <span id="first-name"></span></p>
 <p><strong>Middle Name:</strong> <span id="middle-name"></span></p>
 <p><strong>Last Name:</strong> <span id="last-name"></span></p>
-<p><strong>Username:</strong> <span id="username"></span></p>
 <p><strong>Email:</strong> <span id="email"></span></p>
-<img src="" alt="Profile" id="profile" class="image" style="max-width: 200px; max-height: 200px;">
 <p><strong>Contact:</strong> <span id="contact"></span></p>
 
   </div>
@@ -682,6 +600,7 @@ $("#username").text(e.target.dataset.username);
 $("#email").text(e.target.dataset.email);
 $("#profile").attr("src", e.target.dataset.profile);
 $("#contact").text(e.target.dataset.contact);
+$("#sector").text(e.target.dataset.sector);
     modal.classList.remove("hidden");
     overlay.classList.remove("hidden");
   };

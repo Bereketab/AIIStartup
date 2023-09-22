@@ -92,15 +92,17 @@ def logged_user(request):
 
 def saveContact(request):
     if request.method == "POST":
+        print(request.POST['subject'])
         try:
             poster = Poster(
                 name=request.POST['name'],
                 email=request.POST['email'],
+                subject=request.POST['subject'],
                 message=request.POST['message'],
                 disabled=False,
             )
             poster.save()
-            messages.success(request, "Message saved successfully!")
+            messages.success(request, "you request have been submitted successfully!")
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
     
@@ -194,16 +196,21 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def message_detail(request, messageId, recipentList):
     recipients = [str(i) for i in eval(recipentList)]
-    detail_message = Message.objects.filter(
-        Q(sender=request.user) &
-        Q(recipients= [int(i) for i in eval(recipentList)])
-    )
-    detail_message |= Message.objects.filter(
-        Q(sender__in=recipients) &
-        Q(recipients__contains=[str(request.user.id)])
-    )
+    print(recipients)
+    current_message=Message.objects.get(id=messageId)
+    related_message = Message.objects.filter(Q(sender=current_message.sender) and Q(recipients__contains=current_message.recipients))
+    # print(current_message.recipients)
+    print(related_message.values_list('message'))
+    # detail_message = Message.objects.filter(
+    #     Q(sender=request.user) &
+    #     Q(recipients= [int(i) for i in eval(recipentList)])
+    # )
+    # detail_message |= Message.objects.filter(
+    #     Q(sender__in=recipients) &
+    #     Q(recipients__contains=[str(request.user.id)])
+    # )
 
-    context = {'detail_message': detail_message}
+    context = {'detail_message': related_message}
     
     return render(request, 'messages/message-detail.html', context)
 
@@ -304,7 +311,6 @@ def message_list(request):
 def m_compose(request):
      return render(request, 'messages/compose.html')
 def m_inbox(request):
-    # and Q(recipents=)
     my_inbox = Message.objects.filter(~Q(sender= request.user) )
     my_inbox = Message.objects.filter(recipients__contains=[str(request.user.id)])
     context['my_inbox']=my_inbox.distinct('sender')
@@ -764,6 +770,85 @@ def networks(request,typeOf):
             iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True)
             context['iah'] = iah  
         return render(request,'main/iah.html', context)
+    if(typeOf=='incub'):
+        for field in IncubatorsAccelatorsHub._meta.get_fields(include_parents=False):
+            if isinstance(field, models.OneToOneField):
+                if field.name=='description':
+                        for f in field.related_model._meta.get_fields(include_parents=False):
+                            if( str(f.name) ==  'name' or str(f.name)=='sector'):
+                                filters.append(f.verbose_name)
+                if field.name=='address':
+                        for f in field.related_model._meta.get_fields(include_parents=False):
+                            if( str(f.name) ==  'location' ):
+                                filters.append('Address')                      
+            else:  
+                if(not field.verbose_name ==  'ID' and not field.name == 'ownership_other' and not field.name == 'funded_by_other'   and not field.name == "attachments" and not field.name == "focusIndustry"):
+                    filters.append(field.verbose_name)
+                    context['filters'] = filters
+        if request.user.is_authenticated:
+            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Incubation').exclude(profile__user=request.user.id)
+            context['iah'] = iah
+            connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
+            context['connectList']=connectList
+            return render(request,'main/iah.html', context)
+        else:
+            connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
+            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Incubation')
+            context['iah'] = iah  
+        return render(request,'main/iah.html', context)
+    if(typeOf=='hub'):
+        for field in IncubatorsAccelatorsHub._meta.get_fields(include_parents=False):
+            if isinstance(field, models.OneToOneField):
+                if field.name=='description':
+                        for f in field.related_model._meta.get_fields(include_parents=False):
+                            if( str(f.name) ==  'name' or str(f.name)=='sector'):
+                                filters.append(f.verbose_name)
+                if field.name=='address':
+                        for f in field.related_model._meta.get_fields(include_parents=False):
+                            if( str(f.name) ==  'location' ):
+                                filters.append('Address')                      
+            else:  
+                if(not field.verbose_name ==  'ID' and not field.name == 'ownership_other' and not field.name == 'funded_by_other'   and not field.name == "attachments" and not field.name == "focusIndustry"):
+                    filters.append(field.verbose_name)
+                    context['filters'] = filters
+        if request.user.is_authenticated:
+            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Hub').exclude(profile__user=request.user.id)
+            context['iah'] = iah
+            connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
+            context['connectList']=connectList
+            return render(request,'main/iah.html', context)
+        else:
+            connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
+            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Hub')
+            context['iah'] = iah  
+        return render(request,'main/iah.html', context)
+    if(typeOf=='acclerator'):
+        for field in IncubatorsAccelatorsHub._meta.get_fields(include_parents=False):
+            if isinstance(field, models.OneToOneField):
+                if field.name=='description':
+                        for f in field.related_model._meta.get_fields(include_parents=False):
+                            if( str(f.name) ==  'name' or str(f.name)=='sector'):
+                                filters.append(f.verbose_name)
+                if field.name=='address':
+                        for f in field.related_model._meta.get_fields(include_parents=False):
+                            if( str(f.name) ==  'location' ):
+                                filters.append('Address')                      
+            else:  
+                if(not field.verbose_name ==  'ID' and not field.name == 'ownership_other' and not field.name == 'funded_by_other'   and not field.name == "attachments" and not field.name == "focusIndustry"):
+                    filters.append(field.verbose_name)
+                    context['filters'] = filters
+        if request.user.is_authenticated:
+            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Accelerator').exclude(profile__user=request.user.id)
+            context['iah'] = iah
+            connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
+            context['connectList']=connectList
+            return render(request,'main/iah.html', context)
+        else:
+            connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
+            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Accelerator')
+            context['iah'] = iah  
+        return render(request,'main/iah.html', context)
+    
     if(typeOf=='investor'):
         for field in DonorFunder._meta.get_fields(include_parents=False):
             if isinstance(field, models.OneToOneField):
@@ -1223,7 +1308,14 @@ def filter(request,typeOf):
                         if filterParams[param]:
                             q_objects = [Q(description__sector__startswith=str(item)) for item in filterParams[param]]
                             query = reduce(or_, q_objects)
-                            mentor = mentor.filter(query)      
+                            mentor = mentor.filter(query)   
+                             
+                    if param == 'mentor_area':
+                        if filterParams[param]:
+                            print(filterParams[param])
+                            q_objects = [Q(mentor_area__startswith=str(item)) for item in filterParams[param]]
+                            query = reduce(or_, q_objects)
+                            mentor = mentor.filter(query)     
                     
                     if param=='airelated_expriance':
                         if filterParams[param]:
@@ -1458,3 +1550,33 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('main:login'))
 
+
+
+
+
+
+from django.shortcuts import render, redirect
+from django.views import View
+from .models import Message  # Import your Message model
+from django.contrib.auth.models import User  # Import the User model
+
+class ComposeMessageView(View):
+    template_name = 'messages/compose_message.html'
+
+    def get(self, request):
+        users = User.objects.all()
+        return render(request, self.template_name, {'users': users})
+
+    def post(self, request):
+        sender = request.user
+        recipients = request.POST.getlist('recipients')
+        message_text = request.POST.get('message_text')
+
+        if recipients and message_text:
+            message = Message(sender=sender, recipients=recipients, message=message_text)
+            message.save()
+            return redirect('inbox')  # Redirect to the inbox page or wherever you want to go after sending the message
+
+        # Handle form errors if recipients or message_text is empty
+        users = User.objects.all()
+        return render(request, self.template_name, {'users': users, 'error_message': 'Please select recipients and enter a message.'})

@@ -691,26 +691,25 @@
               >
                 <button
                   class="btn btn-open"
-                  data-name="{{ iah_instance.description.name }}"
-     data-description="{{ iah_instance.description.description }}"
-     data-service="{{ iah_instance.service }}"
-     data-ownership="{{ iah_instance.ownership }}"
-     data-ownership-other="{{ iah_instance.ownership_other }}"
-     data-focus-industry="{{ iah_instance.focusIndustry }}"
-     data-level="{{ iah_instance.level }}"
-     data-funded-by="{{ iah_instance.funded_by }}"
-     data-funded-by-other="{{ iah_instance.funded_by_other }}"
-     data-program-duration="{{ iah_instance.program_duration }}"
-     data-attachments="{{ iah_instance.attachments.url  }}"
-     data-profile-pic="{{ iah_instance.profile.profile_pic.url }}"
-     data-contact="{{ iah_instance.profile.contact }}"
-     data-secondary-email="{{ iah_instance.profile.secondary_email }}"
-     data-gender="{{ iah_instance.profile.get_gender_display }}"
-     data-address-country="{{ iah_instance.address.country }}"
-     data-address-wereda="{{ iah_instance.address.location.wereda.wereda_name }}"
-     data-address-phone-number="{{ iah_instance.address.phone_number }}"
-     data-address-city-name="{{ iah_instance.address.city_name }}"
-     data-address-website="{{ iah_instance.address.website }}"
+                  data-name="{{ iah_.description.name }}"
+     data-description="{{ iah_.description.description }}"
+     data-sector="{% if iah_.description.sector == 'Other' %}{{ iah_.description.other_sector }}{% else %}{{ iah_.description.sector }}{% endif %}"                 
+
+     data-service="{{ iah_.service }}"
+     data-ownership="{{ iah_.ownership }}"
+     data-ownership-other="{{ iah_.ownership_other }}"
+     data-focus-industry="{{ iah_.focusIndustry }}"
+     data-funded-by="{{ iah_.funded_by }}"
+     data-program-duration="{{ iah_.program_duration }}"
+
+     data-country="{{iah_.address.country}}"
+     data-region="{{iah_.address.location.region.region_name}}"
+     data-wereda="{{iah_.address.location.wereda_name}}"
+     data-phonenumber="{{iah_.address.phone_number}}"
+     data-website="{{iah_.address.website}}"
+     data-email="{{iah_.profile.user.email}}"
+     data-profile="{{iah_.profile.profile_pic.url}}"
+     data-gender="{% if iah_.profile.gender == '0' %}{{'Male'}}{% else %}{{'Female'}}{% endif %}"   
                   onclick="openModal(event)"
                 >
                   Detail{{startup.is_connected}}
@@ -821,30 +820,23 @@
 </style>
 <section class="modal hidden">
   <div class="flex">
-    <img src="assets/img/AII-logo.png" alt="user" />
+    <img src="" id="profile" alt="user" />
     <button class="btn-close">⨉</button>
   </div>
   <div>
-    <h3>Company Title</h3>
-<p>Name: <span id="name"></span></p>
+    <h3 id="name">Company Title</h3>
 <p>Description: <span id="description"></span></p>
 <p>Service: <span id="service"></span></p>
 <p>Ownership: <span id="ownership"></span></p>
-<p>Ownership Other: <span id="ownership_other"></span></p>
 <p>Focus Industry: <span id="focus_industry"></span></p>
-<p>Level: <span id="level"></span></p>
 <p>Funded By: <span id="funded_by"></span></p>
-<p>Funded By Other: <span id="funded_by_other"></span></p>
 <p>Program Duration: <span id="program_duration"></span></p>
-<p>Image: <div id="image-container"></div></p>
-<p>Contact: <span id="contact"></span></p>
-<p>Secondary Email: <span id="secondary_email"></span></p>
-<p>Gender: <span id="gender"></span></p>
-<p>Address Country: <span id="address_country"></span></p>
-<p>Address Wereda: <span id="address_wereda"></span></p>
-<p>Address Phone Number: <span id="address_phone_number"></span></p>
-<p>Address City Name: <span id="address_city_name"></span></p>
-<p>Address Website: <span id="address_website"></span></p>
+<p>Email: <span id="email"></span></p>
+<p>Country: <span id="address_country"></span></p>
+<p>Region: <span id="region"></span></p>
+<p>Wereda: <span id="address_wereda"></span></p>
+<p>Phone Number: <span id="address_phone_number"></span></p>
+<p>Website: <span id="address_website"></span></p>
   
   </div>
 </section>
@@ -868,17 +860,25 @@
     }
   });
   const openModal = function (e) {
-    
-    $("#name").text(e.target.dataset.name);
+
+  $("#name").text(e.target.dataset.name);
 $("#description").text(e.target.dataset.description);
 $("#service").text(e.target.dataset.service);
+$("#sector").text(e.target.dataset.sector);
 $("#ownership").text(e.target.dataset.ownership);
-$("#ownership_other").text(e.target.dataset.ownership_other);
-$("#focus_industry").text(e.target.dataset.focus_industry);
-$("#level").text(e.target.dataset.level);
-$("#funded_by").text(e.target.dataset.funded_by);
-$("#funded_by_other").text(e.target.dataset.funded_by_other);
-$("#program_duration").text(e.target.dataset.program_duration);
+$("#focus_industry").text(e.target.dataset.focus);
+$("#funded_by").text(e.target.dataset.funded);
+$("#program_duration").text(e.target.dataset.program);
+$("#email").text(e.target.dataset.email);
+$("#address_country").text(e.target.dataset.country);
+$("#region").text(e.target.dataset.region);
+$("#address_wereda").text(e.target.dataset.wereda);
+$("#address_phone_number").text(e.target.dataset.phonenumber);
+$("#address_website").text(e.target.dataset.website);
+$("#profile").attr('src',e.target.dataset.profile);
+
+
+
 
 // Handle the image using an <img> tag
 const imgSrc = e.target.dataset.attachments;
@@ -887,15 +887,6 @@ if (imgSrc) {
 } else {
   $("#image-container").html(""); // Clear the container if no image is available
 }
-
-$("#contact").text(e.target.dataset.contact);
-$("#secondary_email").text(e.target.dataset.secondary_email);
-$("#gender").text(e.target.dataset.gender);
-$("#address_country").text(e.target.dataset.address_country);
-$("#address_wereda").text(e.target.dataset.address_wereda);
-$("#address_phone_number").text(e.target.dataset.address_phone_number);
-$("#address_city_name").text(e.target.dataset.address_city_name);
-$("#address_website").text(e.target.dataset.address_website);
     modal.classList.remove("hidden");
     overlay.classList.remove("hidden");
   };

@@ -340,19 +340,18 @@ class Carousel(models.Model):
 
 
 class Message(models.Model):
-    sender = models.ForeignKey(User,related_name='message_sender_user', verbose_name='user',on_delete=models.CASCADE)
-    message = models.TextField(max_length='255')
+    sender = models.ForeignKey(User, related_name='message_sender_user', verbose_name='user', on_delete=models.CASCADE)
+    message = models.TextField(max_length=255)  # Changed max_length to an integer
     recipients = ArrayField(models.CharField(max_length=50))
     creation_date = models.DateTimeField('Creation date', auto_now_add=True)
     disabled = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):  # Use __str__ instead of __unicode__ (for Python 3)
         return "message"
-    
-    class Meta:
-        verbose_name = ('message')
-        verbose_name_plural = ('messages')
 
+    class Meta:
+        verbose_name = 'message'  # Use string literals
+        verbose_name_plural = 'messages'  # Use string literals
 
 class Poster(models.Model):
     name = models.CharField(verbose_name='name',max_length=500)

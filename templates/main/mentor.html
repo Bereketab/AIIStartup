@@ -102,13 +102,14 @@
                   <div class="accordion-body">
                     <ul>
                       
+
                       {%if filter == 'Educational Level' %}
                       <div class="form-check form-check-inline">
                         <input
                           class="form-check-input"
                           type="checkbox"
                           id="No formal education"
-                          value="No formal education"
+                          value="no_formal_education"
                           name='educational_level'
                         />
                         <label class="form-check-label" for="No formal education"
@@ -120,7 +121,7 @@
                           class="form-check-input"
                           type="checkbox"
                           id="Primary education"
-                          value="Primary education"
+                          value="primary_education"
                           name='educational_level'
                         />
                         <label class="form-check-label" for="Primary education"
@@ -132,7 +133,7 @@
                           class="form-check-input"
                           type="checkbox"
                           id="Secondary education or high school"
-                          value="Secondary education or high school"
+                          value="secondary_education_or_high_school"
                           name='educational_level'
                         />
                         <label class="form-check-label" for="Secondary education or high school"
@@ -144,7 +145,7 @@
                           class="form-check-input"
                           type="checkbox"
                           id="Vocational qualification"
-                          value="Vocational qualification"
+                          value="vocational_qualification"
                           name='educational_level'
                         />
                         <label class="form-check-label" for="Vocational qualification"
@@ -156,7 +157,7 @@
                           class="form-check-input"
                           type="checkbox"
                           id="Bachelors degree"
-                          value="Bachelors degree"
+                          value="bachelors_degree"
                           name='educational_level'
                         />
                         <label class="form-check-label" for="Bachelors degree"
@@ -168,7 +169,7 @@
                           class="form-check-input"
                           type="checkbox"
                           id="Masters degree"
-                          value="Masters degree"
+                          value="masters_degree"
                           name='educational_level'
                         />
                         <label class="form-check-label" for="Masters degree"
@@ -180,7 +181,7 @@
                           class="form-check-input"
                           type="checkbox"
                           id="Doctorate or higher"
-                          value="Doctorate or higher"
+                          value="doctorate_or_higher"
                           name='educational_level'
                         />
                         <label class="form-check-label" for="Doctorate or higher"
@@ -192,7 +193,7 @@
                           class="form-check-input"
                           type="checkbox"
                           id="Other"
-                          value="Other"
+                          value="other"
                           name='educational_level'
                         />
                         <label class="form-check-label" for="Other"
@@ -200,6 +201,7 @@
                         >
                       </div>
                       {%endif%} 
+
 
 
                       {%if filter == 'Educational Background' %}
@@ -708,8 +710,7 @@
                   class="btn btn-open"
                   data-name="{{mentor.description.name}}"
                   data-description="{{mentor.description.description}}"
-                  data-sector="{{mentor.description.sector }}=='Other'?{{startup.description.other_sector}}:{{startup.description.sector}}"
-                  {% if startup.attachments %} data-logo="{{startup.logo.url}}" {% endif %}      
+                  data-sector="{% if mentor.description.sector == 'Other' %}{{ mentor.description.other_sector }}{% else %}{{ mentor.description.sector }}{% endif %}"                 
                   data-educationallevel="{{mentor.educational_level}}"
                   data-educationalbackground="{{mentor.educational_background}}"
                   data-mentorarea="{{mentor.mentor_area}}"
@@ -718,13 +719,14 @@
                   data-region="{{mentor.address.location.region.region_name}}"
                   data-wereda="{{mentor.address.location.wereda_name}}"
                   data-phonenumber="{{mentor.address.phone_number}}"
-                  data-cityname="{{mentor.address.city_name}}"
                   data-website="{{mentor.address.website}}"
                   data-firstname="{{mentor.profile.user.first_name}}"
                   data-middilename="{{mentor.profile.middle_name}}"
                   data-lastname="{{mentor.profile.user.last_name}}"
                   data-email="{{mentor.profile.user.email}}"
-                  data-gender="{{mentor.profile.gender}}"
+                  data-profile="{{mentor.profile.profile_pic.url}}"
+                  data-gender="{% if mentor.profile.gender == '0' %}{{'Male'}}{% else %}{{'Female'}}{% endif %}"                 
+
                 
                   onclick="openModal(event)"
                 >
@@ -830,11 +832,12 @@
 </style>
 <section class="modal hidden">
   <div class="flex">
-    <img src="assets/img/AII-logo.png" alt="user" />
+    <img src="" id="profile"  alt="user" />
     <button class="btn-close">⨉</button>
   </div>
   <div>
-    <h3 id="name">Company Title</h3>
+
+    <h3 id="name"></h3>
     <p>Description: <span id="description"></span></p>
     <p>Sector: <span id="sector"></span></p>
     <p>Educational Level: <span id="educationallevel"></span></p>
@@ -845,7 +848,6 @@
     <p>Region: <span id="region"></span></p>
     <p>Wereda: <span id="wereda"></span></p>
     <p>Phone Number: <span id="phonenumber"></span></p>
-    <p>City Name: <span id="cityname"></span></p>
     <p>Website: <span id="website"></span></p>
     <p>First Name: <span id="firstname"></span></p>
     <p>Middle Name: <span id="middlename"></span></p>
@@ -889,10 +891,11 @@ $("#phonenumber").text(e.target.dataset.phonenumber);
 $("#cityname").text(e.target.dataset.cityname);
 $("#website").text(e.target.dataset.website);
 $("#firstname").text(e.target.dataset.firstname);
-$("#middlename").text(e.target.dataset.middlename);
+$("#middlename").text(e.target.dataset.middilename);
 $("#lastname").text(e.target.dataset.lastname);
 $("#email").text(e.target.dataset.email);
 $("#gender").text(e.target.dataset.gender);
+$("#profile").attr('src',e.target.dataset.profile);
 
 
     modal.classList.remove("hidden");

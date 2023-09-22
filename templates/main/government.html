@@ -59,8 +59,8 @@
   <div class="container" data-aos="fade-up">
     <div class="row g-5" id="filter_replace">
       <div class="col-lg-3">
-        rdadmin@aii
-        192.168.1.174
+        <!-- rdadmin@aii
+        192.168.1.174 -->
         <div class="sidebar" style="justify-content: center;display: grid;">
           <div class="sidebar-item search-form">
             
@@ -579,29 +579,18 @@
                 <button
                   class="btn btn-open"
                   data-name="{{i.description.name}}"
+                  data-GOVERNMENT_TYPE="{{i.GOVERNMENT_TYPE}}"
+                  data-level="{{i.level}}"
                   data-description="{{i.description.description}}"
-                  data-sector="{{i.description.sector }}=='Other'?{{startup.description.other_sector}}:{{startup.description.sector}}"
-                  {% comment %} data-logo="{{i.description.logo.url}}" {% endcomment %}
-                  data-iarea="{{i.i_area}}"
-                  data-airelated ="{{i.airelated_expriance}}"
+                  data-sector="{% if i.description.sector == 'Other' %}{{ i.description.other_sector }}{% else %}{{ i.description.sector }}{% endif %}"                 
+                  data-profile="{{i.profile.profile_pic.url}}"
                   data-country="{{i.address.country}}"
                   data-region="{{i.address.location.region.region_name}}"
                   data-wereda="{{i.address.location.wereda_name}}"
                   data-phonenumber="{{i.address.phone_number}}"
-                  data-cityname="{{i.address.city_name}}"
                   data-website="{{i.address.website}}"
-                  data-firstname="{{i.profile.user.first_name}}"
-                  data-middilename="{{i.profile.middle_name}}"
-                  data-lastname="{{i.profile.user.last_name}}"
                   data-email="{{i.profile.user.email}}"
-                  data-gender="{{i.profile.gender}}"
-                  {%
-                  comment
-                  %}
-                  data-connectedwith="{{startup.profile.fr}}"
-                  {%
-                  endcomment
-                  %}
+            
                   onclick="openModal(event)"
                 >
                   Detail{{startup.is_connected}}
@@ -706,16 +695,20 @@
 </style>
 <section class="modal hidden">
   <div class="flex">
-    <img src="assets/img/AII-logo.png" alt="user" />
+    <img src="assets/img/AII-logo.png" id="profile" alt="user" />
     <button class="btn-close">⨉</button>
   </div>
   <div>
-    <h3>Company Title</h3>
-    <p>Sector:<span id="sect"></span></p>
-    <p>Establishement year</p>
-    <p>Stage</p>
-    <p>Market Scope</p>
-    <p>Description</p>
+    <h3 id="name">Company Title</h3>
+    <p>Description: <span id="description"></span></p>
+    <p>Government type: <span id="GOVERNMENT_TYPE"></span></p>
+    <p>Level: <span id="level"></span></p>
+    <p>Email: <span id="email"></span></p>
+    <p>Country: <span id="address_country"></span></p>
+    <p>Region: <span id="region"></span></p>
+    <p>Wereda: <span id="address_wereda"></span></p>
+    <p>Phone Number: <span id="address_phone_number"></span></p>
+    <p>Website: <span id="address_website"></span></p>
   </div>
 </section>
 
@@ -738,8 +731,28 @@
     }
   });
   const openModal = function (e) {
-    
-    $("#sect").text(e.target.dataset.sector);
+ 
+    $("#name").text(e.target.dataset.name);
+    $("#GOVERNMENT_TYPE").text(e.target.dataset.GOVERNMENT_TYPE);
+
+    $("#level").text(e.target.dataset.level);
+    $("#description").text(e.target.dataset.description);
+    $("#sector").text(e.target.dataset.sector);
+    $("#profile").attr('src',e.target.dataset.profile);
+    $("#country").text(e.target.dataset.country);
+
+    $("#region").text(e.target.dataset.region);
+
+    $("#wereda").text(e.target.dataset.wereda);
+
+    $("#phonenumber").text(e.target.dataset.phonenumber);
+    $("#website").text(e.target.dataset.website);
+    $("#email").text(e.target.dataset.email);
+
+
+
+
+
     modal.classList.remove("hidden");
     overlay.classList.remove("hidden");
   };
