@@ -10,16 +10,29 @@ register = template.Library()
 
 @register.filter
 def getModel(obj):
-    print(obj._meta.model_name)
+    # print(obj._meta.model_name)
     return obj._meta.model_name
 
 
 @register.filter
 def getUser(value):
     users = User.objects.filter(id__in=value)
-    print(",".join(str(x) for x in list(users.values_list('username',flat=True))))
+    # print(",".join(str(x) for x in list(users.values_list('username',flat=True))))
 
     return ",".join(str(x) for x in list(users.values_list('username',flat=True)))
+
+@register.filter
+def getUserp(value):
+    users = Profile.objects.filter(user__id__in=value)
+    # print(",".join(str(x) for x in list(users.values_list('username',flat=True))))
+
+    return users
+@register.filter
+def getUserID(value):
+    users = User.objects.filter(id__in=value)
+    # print(",".join(str(x) for x in list(users.values_list('id',flat=True))))
+
+    return ",".join(str(x) for x in list(users.values_list('id',flat=True)))
 
 
 
@@ -31,7 +44,7 @@ def getStatus(status):
         return 'Accepted'
     elif status==3:
         return 'Waiting for admin approval'
-    print(status)
+    # print(status)
     
 @register.filter
 def getStatuss(status):
@@ -41,12 +54,14 @@ def getStatuss(status):
         return 'Accepted'
     elif status==3:
         return 'Rejected'
-    print(status)
+    # print(status)
 
 @register.filter
 def getUserPic(userId):
     try:
-        profile = Profile.objects.get(user__id=userId)
+        pass
+        profile = Profile.objects.get(user__username=userId)
+        # print(profile.profile_pic)
         return profile.profile_pic.url
     except Profile.DoesNotExist:
         return ''
@@ -72,8 +87,68 @@ def get_related_entity(id):
         elif government is not None:
             return government._meta.model.__name__
     else:
-        print(True)
+        # print(True)
         pass
 
             # return HttpResponse('user has no profile')
     # return obj._meta.model.__name__
+
+
+@register.filter
+def getOtherRecipent(userId,user):
+    try:
+        filtered_array = [x for x in userId if int(x)  != user.id]
+        z=[]
+        profile = Profile.objects.filter(user__id__in=filtered_array)
+        for i in profile:
+            z.append(i)
+        return z
+    except Profile.DoesNotExist:
+        return ''
+    
+@register.filter
+def getSenderPic(userId):
+    try:
+        profile = Profile.objects.get(user__id=userId)
+        return profile.profile_pic.url
+    except Profile.DoesNotExist:
+        return ''
+from django.db.models import Q
+@register.filter
+def getLatestMessage(userId):
+    try:
+        latest_message = Message.objects.get(id=userId)
+        
+        # Get the latest message for the given sender and where any recipient in latest_message.recipients
+        latest_message = Message.objects.filter(
+            sender=latest_message.sender,
+            recipients__overlap=latest_message.recipients  # Use overlap for array matching
+        ).latest('creation_date')
+        
+        return latest_message.message
+    except Profile.DoesNotExist:
+        return ''
+
+@register.filter
+def getLatestMessageTime(userId):
+    try:
+        latest_message = Message.objects.get(id=userId)
+        latest_message = Message.objects.filter(
+            sender=latest_message.sender,
+            recipients__overlap=latest_message.recipients  # Use overlap for array matching
+        ).latest('creation_date')
+        return latest_message.creation_date
+    except Profile.DoesNotExist:
+        return ''
+@register.filter
+def getAllRelated(userId):
+    try:
+        latest_message = Message.objects.get(id=userId)
+        latest_message = Message.objects.filter(
+            sender=latest_message.sender,
+             # Use overlap for array matching
+        )
+        return latest_message
+    except Profile.DoesNotExist:
+        return ''
+    

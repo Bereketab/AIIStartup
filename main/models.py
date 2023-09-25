@@ -176,7 +176,8 @@ class Mentor(models.Model):
         max_length=50,blank=True,null=True)
     attachments = models.FileField(
         verbose_name = 'Attachment',
-        upload_to='mentor/attachments',blank=True,null=True, help_text="please upload relevant documents max 10")
+        upload_to='mentor/attachments',blank=True,null=True, help_text="please upload relevant documents max 10"
+        )
     description = models.OneToOneField(Description, on_delete=models.DO_NOTHING,blank=False,null=False,related_name='mentor_description')
     @property
     def is_pending(self):
@@ -326,7 +327,7 @@ class Connect(models.Model):
 
     
  
-
+# python manage.py makemigrations your_app_name --empty
 
 class Carousel(models.Model):
     description = models.CharField(
@@ -341,17 +342,19 @@ class Carousel(models.Model):
 
 class Message(models.Model):
     sender = models.ForeignKey(User, related_name='message_sender_user', verbose_name='user', on_delete=models.CASCADE)
-    message = models.TextField(max_length=255)  # Changed max_length to an integer
-    recipients = ArrayField(models.CharField(max_length=50))
+    message = models.TextField()  # Remove max_length or set it to a suitable value
+    recipients = models.ManyToManyField(User, related_name='received_messages', blank=True)
     creation_date = models.DateTimeField('Creation date', auto_now_add=True)
     disabled = models.BooleanField(default=False)
 
-    def __str__(self):  # Use __str__ instead of __unicode__ (for Python 3)
-        return "message"
+    def __str__(self):
+        return self.message  # Return the message content as the string representation
 
     class Meta:
-        verbose_name = 'message'  # Use string literals
-        verbose_name_plural = 'messages'  # Use string literals
+        verbose_name = 'message'
+        verbose_name_plural = 'messages'
+        # ordering = ('creation_date',)
+        
 
 class Poster(models.Model):
     name = models.CharField(verbose_name='name',max_length=500)

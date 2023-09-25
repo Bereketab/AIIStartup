@@ -8,13 +8,11 @@
       {% csrf_token %}
       <input hidden name="Startup" value="Government">
       <div id="basicsGovernment">
-        <h4 style="color: #226470;" style="color: #226470;">Government Basics</h4>
         {% include "./basic/basic.html" with typeOff="government_"  %}
 
 
-      <div class="row">
         
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
           {{ Government_form.GOVERNMENT_TYPE|as_crispy_field }}
         </div>
         <div class="form-group col-md-2 d-none" id="other_Government_type">
@@ -29,20 +27,18 @@
             id="id_other_Government_type"
           />
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
           {{ Government_form.level|as_crispy_field }}
         </div>  
-        </div>
 
       </div>
       <div id="basicsAddress">
-        <h4 style="color: #226470;">Startup Address</h4>
         {% include "./basic/address.html" with typeOff="government_" %}
       </div>
       <div id="basicsResponsible">
-        <h4>Responsible Person</h4>
         {% include "./basic/person.html"  %}
     </div>
+    
       <button type="submit" class="btn btn-primary">Register</button>
     </form>
 

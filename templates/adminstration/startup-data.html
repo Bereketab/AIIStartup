@@ -28,7 +28,7 @@
       </thead>
       <tbody>
         {% for s in startups %}
-      <tr class="startup-row"  id="obj"   data-target="#modal-startup"  
+      <tr class="startup-row"  id="startup-row"   data-target="#modal-startup"  
       data-toggle="modal" 
     
       data-id="{{s.id}}"
@@ -63,8 +63,8 @@
       >
 
         <td>{% if s.profile.user.is_active %}
-          <a href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
-          <a href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
+          <a id="{{s.profile.user.id}}" href="{% url 'main:decativate_profile' s.profile.user.id %}">deactivate</a>{% else %}
+          <a id="{{s.profile.user.id}}" href="{% url 'main:activate_profile' s.profile.user.id %}">activate</a>
           {% endif %}</td>
         <td >{{s.description.name}}</td>
         <td>{{s.description.description}}</td>

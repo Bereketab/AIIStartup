@@ -145,7 +145,7 @@ class DescriptionForm(ModelForm):
         model = Description
         fields = ['name','description','sector','logo'] 
         widgets = {
-        'description': forms.Textarea(attrs={'rows':5, 'cols':40}),            # 'roll': forms.NumberInput(attrs={'class': 'form-control'}),
+        'description': forms.Textarea(attrs={'rows':2, 'cols':40}),            # 'roll': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
 class DescriptionIncubatorForm(ModelForm):

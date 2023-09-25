@@ -12,21 +12,19 @@
         <nav id="navbar" class="navbar">
           <ul>
             
-            <li class="dropdown"><a href="#"><span>Connections</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
+            <li class="dropdown"><a href="#"><span>Connections<span class="badge bg-danger float-end">1</span></span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
               <ul>
-                <li><a href="{% url 'main:c_connected'%}">connected</a></li>
-                <li><a href="{% url 'main:c_sent'%}">sent</a></li>
-                <li><a href="{% url 'main:c_recived'%}">recived</a></li>  
+                <li><a href="{% url 'main:c_connected'%}">connected<span class="badge bg-danger float-end">1</span></a></li>
+                <li><a href="{% url 'main:c_sent'%}">sent<span class="badge bg-danger float-end">1</span></a></li>
+                <li><a href="{% url 'main:c_recived'%}">recived<span class="badge bg-danger float-end">1</span></a></li>  
               </ul>
             </li>
-            <li class="dropdown"><a href="#"><span>Messages</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
+            <li class="dropdown"><a href="#"><span>Messages <span class="badge bg-danger float-end">1</span></span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
               <ul>
-                <li><a href="{% url 'main:m_compose'%}">compose</a></li>
-      <li><a href="{% url 'main:m_inbox'%}">inbox</a></li>
-      <li><a href="{% url 'main:m_outbox'%}">outbox</a></li> 
+                <li><a href="{% url 'main:m_compose'%}">Compose</a></li>
+      <li><a href="{% url 'main:m_inbox'%}">Messages<span class="badge bg-danger float-end">1</span></a></li>
               </ul>
             </li>
-            <li><a href="#">Notifications</a></li>
           </ul>
         </nav><!-- .navbar -->
         

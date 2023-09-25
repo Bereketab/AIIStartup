@@ -488,7 +488,7 @@ loginForm.addEventListener("submit", (e) => {
      * Add a click handler to hide the popup.
      * @return {boolean} Don't follow the href.
      */
-
+ 
   function getStartup(feature){
     {% if startup %}
     {% for s in startup %}
@@ -550,13 +550,7 @@ else return 0
     {%endfor%}
   }
   var vectorSource =new ol.source.Vector()
-  var wereda_geoJson =  "http://localhost:8080/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode%3AETH_adm2&maxFeatures=1000&outputFormat=application%2Fjson";
-  $.getJSON( wereda_geoJson, function( data ) {
 
-
-  vectorSource.addFeatures((new ol.format.GeoJSON()).readFeatures(data))
-
-  })
   var vectorLayer = new ol.layer.Vector({
   source: vectorSource,
   });
@@ -649,6 +643,23 @@ else return 0
 function closePopup(){
   console.log(true)
   overlay.setPosition(undefined);
+
+}
+window.onload = function() {
+var all='{{merged_objects|safe}}';
+{% for m in merged_objects %}
+var wereda_geoJson =  "http://localhost:8080/geoserver/geonode/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode%3AETH_adm2&maxFeatures=1000&outputFormat=application%2Fjson";
+  $.getJSON( wereda_geoJson, function( data ) {
+  console.log('{{m.address.location.wereda_name}}')
+
+  vectorSource.addFeatures((new ol.format.GeoJSON()).readFeatures(data.features.filter(x=>x.properties.NAME_2=='{{m.address.location.wereda_name}}')[0]))
+  // console.log()
+
+
+
+
+  })
+  {%endfor%}
 
 }
  

@@ -1,23 +1,21 @@
+
+
+
 {% extends './base.html' %} 
 {% block content %} {% load static %} 
-{% include './header.html' %} {% comment %}
+{% include './header.html' %}
 <script
   type="text/javascript"
-  src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"
-></script>
-{% endcomment %}
-<script
-  type="text/javascript"
-  src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
+  src="{% static 'js/moment.min.js' %}"
 ></script>
 <script
   type="text/javascript"
-  src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
+  src="{% static 'js/daterangepicker.min.js' %}"
 ></script>
 <link
   rel="stylesheet"
   type="text/css"
-  href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+  href="{% static 'css/daterangepicker.css' %}"
 />
 <div class="breadcrumbs">
   <div class="container">
@@ -659,7 +657,7 @@
                 const csrfmiddlewaretoken = document.querySelector(
                   "[name=csrfmiddlewaretoken]"
                 ).value;
-                console.log(obj);
+                // console.log(obj);
               $.ajax({
                   headers: { "X-CSRFToken": csrfmiddlewaretoken },
                   url: '{% url "main:filter" "mentor" %}',
@@ -668,7 +666,6 @@
                   type: "POST",
                   success: function (data) {
                     $('#to_replaced').replaceWith(data)
-                    {% comment %} console.log(data) {% endcomment %}
                     
                   },
                   error: function (data) {
@@ -730,137 +727,69 @@
                 
                   onclick="openModal(event)"
                 >
-                  Detail{{startup.is_connected}}
+                  Detail
                 </button>
-                {%if user.is_authenticated %}
-                <button class="btn btn-open">
-                  {% comment %} <a
-                    href="{% url 'main:freind_request' startup.profile.user.id%}"
-                    >Connect</a
-                  > {% endcomment %}
-                  </button
-                >{%endif%}
+                {% if user.is_authenticated %}
+
+                <form onsubmit=makeConnect(event,'{{mentor.profile.user}}','{{mentor.profile.user.id}}')>
+                  {% csrf_token %}
+                  <button class="btn btn-open " type="submit">
+                    <div id='loading{{mentor.profile.user.id}}' class="spinner-border d-none"
+                      style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                    {% if mentor.is_connected == 1 %}
+                    <p style="color:#0ea2bd">Pending</p>
+                    {% elif mentor.is_connected == 2 %}
+                    <a href="{% url 'main:m_compose' %}?return_to={{ mentor.profile.user.id }}"
+                      style="color:white">Message</a>
+                    {% elif mentor.is_connected == 3 %}
+                    <a id='connect{{mentor.profile.user.id}}'> Connect</a>
+                    {% else %}
+                    <a id='connect{{mentor.profile.user.id}}'> Connect</a>
+                  </button>
+                </form>
+                  {% endif%}
+                 
               </div>
+              {%endif%}
             </article>
           </div>
-          <!-- End post list item -->
           {%endfor%}
         </div>
-        <!-- End blog posts list -->
       </div>
     </div>
   </div>
 </section>
-<!-- End Blog Section -->
 
-<style>
-  .accordion-button {
-    border-radius: 4px !important;
-  }
 
-  .modal {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.4rem;
-    width: 450px;
-    padding: 1.3rem;
-    height: auto;
-    /* position: absolute; */
-    z-index: 2;
-    left: 35%;
-    top: 20%;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 15px;
-  }
-
-  .modal .flex {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .modal input {
-    padding: 0.7rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 0.9em;
-  }
-
-  .modal p {
-    font-size: 0.9rem;
-    color: #777;
-    margin: 0.4rem 0 0.2rem;
-  }
-
-  button {
-    cursor: pointer;
-    border: none;
-    font-weight: 600;
-  }
-
-  .btn-close {
-    transform: translate(10px, -20px);
-    padding: 0.5rem 0.7rem;
-    background: #eee;
-    border-radius: 50%;
-  }
-
-  .overlay {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(1px);
-    z-index: 1;
-  }
-
-  .hidden {
-    display: none;
-  }
-  .flex img {
-    max-width: 60px !important;
-    border-radius: 50%;
-    margin-left: 40%;
-    margin-bottom: 20px;
-  }
-</style>
 <section class="modal hidden">
   <div class="flex">
     <img src="" id="profile"  alt="user" />
-    <button class="btn-close">⨉</button>
+    <button type="button" class="btn-close">⨉</button>
   </div>
   <div>
+    <img src="" alt="Logo" id="logo" class="image" style="max-width: 200px; max-height: 200px;">
+<p><strong>Name:</strong> <span id="name"></span></p>
+<p><strong>Sector:</strong> <span id="sector"></span></p>
+<p><strong>Country:</strong> <span id="country"></span></p>
+<p><strong>Region Name:</strong> <span id="region-name"></span></p>
+<p><strong>Wereda Name:</strong> <span id="wereda-name"></span></p>
+<p><strong>Phone Number:</strong> <span id="phone-number"></span></p>
+<p><strong>Website:</strong> <span id="website"></span></p>
+<p><strong>First Name:</strong> <span id="first-name"></span></p>
+<p><strong>Middle Name:</strong> <span id="middle-name"></span></p>
+<p><strong>Last Name:</strong> <span id="last-name"></span></p>
+<p><strong>Email:</strong> <span id="email"></span></p>
+<p><strong>Contact:</strong> <span id="contact"></span></p>
 
-    <h3 id="name"></h3>
-    <p>Description: <span id="description"></span></p>
-    <p>Sector: <span id="sector"></span></p>
-    <p>Educational Level: <span id="educationallevel"></span></p>
-    <p>Educational Background: <span id="educationalbackground"></span></p>
-    <p>Mentor Area: <span id="mentorarea"></span></p>
-    <p>AI-Related Experience: <span id="airelated"></span></p>
-    <p>Country: <span id="country"></span></p>
-    <p>Region: <span id="region"></span></p>
-    <p>Wereda: <span id="wereda"></span></p>
-    <p>Phone Number: <span id="phonenumber"></span></p>
-    <p>Website: <span id="website"></span></p>
-    <p>First Name: <span id="firstname"></span></p>
-    <p>Middle Name: <span id="middlename"></span></p>
-    <p>Last Name: <span id="lastname"></span></p>
-    <p>Email: <span id="email"></span></p>
-    <p>Gender: <span id="gender"></span></p>
-       
   </div>
 </section>
 
 <div class="overlay hidden"></div>
 
 <script>
+ 
   const modal = document.querySelector(".modal");
   const overlay = document.querySelector(".overlay");
   const openModalBtn = document.querySelector(".btn-open");
@@ -877,27 +806,28 @@
     }
   });
   const openModal = function (e) {
-    $("#name").text(e.target.dataset.name);
-$("#description").text(e.target.dataset.description);
-$("#sector").text(e.target.dataset.sector);
-$("#educationallevel").text(e.target.dataset.educationallevel);
-$("#educationalbackground").text(e.target.dataset.educationalbackground);
-$("#mentorarea").text(e.target.dataset.mentorarea);
-$("#airelated").text(e.target.dataset.airelated);
+    
+    $("#sect").text(e.target.dataset.sector);
+
+$("#logo").attr("src", e.target.dataset.logo);
+$("#name").text(e.target.dataset.name);
+$("#establishment-year").text(e.target.dataset.establishment_year);
+$("#stage").text(e.target.dataset.stage);
+$("#market-scope").text(e.target.dataset.market_scope);
 $("#country").text(e.target.dataset.country);
-$("#region").text(e.target.dataset.region);
-$("#wereda").text(e.target.dataset.wereda);
-$("#phonenumber").text(e.target.dataset.phonenumber);
-$("#cityname").text(e.target.dataset.cityname);
+$("#region-name").text(e.target.dataset.region_name);
+$("#wereda-name").text(e.target.dataset.wereda_name);
+$("#phone-number").text(e.target.dataset.phone_number);
+$("#city-name").text(e.target.dataset.city_name);
 $("#website").text(e.target.dataset.website);
-$("#firstname").text(e.target.dataset.firstname);
-$("#middlename").text(e.target.dataset.middilename);
-$("#lastname").text(e.target.dataset.lastname);
+$("#first-name").text(e.target.dataset.first_name);
+$("#middle-name").text(e.target.dataset.middle_name);
+$("#last-name").text(e.target.dataset.last_name);
+$("#username").text(e.target.dataset.username);
 $("#email").text(e.target.dataset.email);
-$("#gender").text(e.target.dataset.gender);
-$("#profile").attr('src',e.target.dataset.profile);
-
-
+$("#profile").attr("src", e.target.dataset.profile);
+$("#contact").text(e.target.dataset.contact);
+$("#sector").text(e.target.dataset.sector);
     modal.classList.remove("hidden");
     overlay.classList.remove("hidden");
   };
@@ -934,6 +864,33 @@ $("#profile").attr('src',e.target.dataset.profile);
       });
     });
   });
-</script>
 
+  
+</script>
+<script>
+  function makeConnect(e, user, id) {
+    e.preventDefault()
+    $('#loading' + id).removeClass('d-none')
+    $($('#connect' + id)).addClass('d-none')
+    const csrfmiddlewaretoken = document.querySelector(
+      "[name=csrfmiddlewaretoken]"
+    ).value;
+    $.ajax({
+      headers: { "X-CSRFToken": csrfmiddlewaretoken },
+      url: {% url 'main:connect'%},
+      data: { 'userId': id },
+      dataType: 'html',
+      type: "POST",
+      success: function (data) {
+        console.log($('#connect' + id))
+        setTimeout(() => {
+          $('#connect' + id).replaceWith('<p style="color:#0ea2bd"> connect request sent !</p>')
+          $('#loading' + id).addClass('d-none')
+        }, "3000");
+      },
+      error: function (data) {
+      }
+    });
+  }
+</script>
 {% endblock content %}

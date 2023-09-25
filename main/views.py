@@ -30,7 +30,6 @@ context = {}
 
 
 def checkProfileType(user):
-    # print(len(Startup.objects.filter(profile__user=user.id)))
     if len(Startup.objects.filter(profile__user=user.id))>=1:
         return 'Startup'
     if len(Mentor.objects.filter(profile__user=user.id))>=1:
@@ -92,7 +91,6 @@ def logged_user(request):
 
 def saveContact(request):
     if request.method == "POST":
-        print(request.POST['subject'])
         try:
             poster = Poster(
                 name=request.POST['name'],
@@ -134,7 +132,6 @@ def currentUserConnectUserList(request):
             connected_profiles =connected_profiles.filter(Q(requester=request.user)|Q(responser=request.user))
             connected_profiles = connected_profiles.filter(status=2).values_list('responser__profile', flat=True)
             connected_profiles = list(connected_profiles) + list(Connect.objects.filter(responser=request.user, status=2,status_admin=2).values_list('requester__profile', flat=True))
-            print(connected_profiles)
             
             connected_entities = list(
                 Startup.objects.filter(profile__in=connected_profiles).exclude(profile__user=request.user).values('profile__user__username',"profile__user__id")) + \
@@ -162,17 +159,21 @@ def messagess(request):
 
 import ast
 def sentMessage(request):
-    if request.method=="POST":
-        # print(ast.literal_eval(request.POST['recievers']))
+    if request.method == "POST":
+        recipient_ids = [int(i) for i in ast.literal_eval(request.POST['recievers'])]
         message = Message(
-			sender=request.user,
-			message=request.POST['message'],
-            recipients=ast.literal_eval(request.POST['recievers'])
-            )
+            sender=request.user,
+            message=request.POST['message'],
+        )
         message.save()
+        
+        # Loop through recipient IDs and add each recipient to the message.
+        for recipient_id in recipient_ids:
+            recipient = User.objects.get(pk=recipient_id)  # Replace User with your User model.
+            message.recipients.add(recipient)
 
         
-        return HttpResponseRedirect(reverse('main:m_outbox'))
+        return HttpResponse('sent')
 
 
 
@@ -189,27 +190,19 @@ def sentMessagefromDetail(request):
         message.save()
 
         
-        return HttpResponseRedirect(reverse('main:m_outbox'))
+        return HttpResponse(message)
 
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
-def message_detail(request, messageId, recipentList):
-    recipients = [str(i) for i in eval(recipentList)]
-    print(recipients)
+def message_detail(request, messageId):
     current_message=Message.objects.get(id=messageId)
-    related_message = Message.objects.filter(Q(sender=current_message.sender) and Q(recipients__contains=current_message.recipients))
-    # print(current_message.recipients)
-    print(related_message.values_list('message'))
-    # detail_message = Message.objects.filter(
-    #     Q(sender=request.user) &
-    #     Q(recipients= [int(i) for i in eval(recipentList)])
-    # )
-    # detail_message |= Message.objects.filter(
-    #     Q(sender__in=recipients) &
-    #     Q(recipients__contains=[str(request.user.id)])
-    # )
-
+    sender_condition = Q(sender=current_message.sender)
+    recipients_condition = Q(recipients__contains=current_message.recipients)
+    
+    # Combine the conditions using the & operator for AND
+    related_message = Message.objects.filter(sender_condition & recipients_condition)
+    print(related_message)
     context = {'detail_message': related_message}
     
     return render(request, 'messages/message-detail.html', context)
@@ -228,12 +221,12 @@ def c_connected(request):
      return render(request, 'connected/connected.html',context)
 def c_sent(request):
      my_connect = Connect.objects.filter(Q(requester=request.user))
-     my_connect=my_connect.filter(Q(status=1)|Q(status=2) and Q(status_admin=1)|Q(status_admin=3))
+     my_connect=my_connect.filter(~Q(status=2) | ~Q(status_admin=2))
      context['connect']=my_connect
      return render(request, 'connected/sent.html',context)
 def c_recived(request):
      my_connect = Connect.objects.filter(Q(responser=request.user))
-     my_connect=my_connect.filter(Q(status=1)|Q(status=2) and Q(status_admin=1)|Q(status_admin=3))
+     my_connect=my_connect.filter(~Q(status=2) | ~Q(status_admin=2))
      context['connect']=my_connect
      return render(request, 'connected/recived.html',context)
 def accept(request,pk):
@@ -244,7 +237,6 @@ def accept(request,pk):
     context['connect']=my_connect
     if return_to:
         return redirect(return_to)
-    #  return HttpResponseRedirect(reverse('main:c_recived'))
 def adminLogin(request):
      return render(request,'adminstration/login.html')
 
@@ -266,7 +258,6 @@ def profile_list(request):
     context['government'] =government    
     merged_objects = list(startups) + list(mentor) + list(incubatorsAccelatorsHub) + list(donorFunder) + list(government)
     context ['merged_objects']= merged_objects
-    print(context['merged_objects'])
     return render(request,'adminstration/profile_list.html',context)
 
 def activate_profile(request, id):
@@ -310,11 +301,54 @@ def message_list(request):
 
 def m_compose(request):
      return render(request, 'messages/compose.html')
+from django.db.models import BooleanField, Value
+from django.db.models import Max, OuterRef, Subquery, F
+from collections import defaultdict
 def m_inbox(request):
-    my_inbox = Message.objects.filter(~Q(sender= request.user) )
-    my_inbox = Message.objects.filter(recipients__contains=[str(request.user.id)])
-    context['my_inbox']=my_inbox.distinct('sender')
+    my_message=Message.objects.all()
+    i_send = my_message.filter(sender=request.user).annotate(is_sent=Value(True, output_field=BooleanField()))
+
+    # Create a dictionary to group messages by recipients
+    grouped_messages = defaultdict(list)
+
+    # Group messages by recipients
+    for message in i_send:
+        recipients_ids = sorted([user.id for user in message.recipients.all()])
+        key = tuple(recipients_ids)
+        grouped_messages[key].append(message)
+
+    # Select the latest message from each group of recipients
+    latest_messages = [max(messages, key=lambda message: message.creation_date) for messages in grouped_messages.values()]
+    latest_message_ids = [message.id for message in latest_messages]
+
+    # Convert the list of IDs into a QuerySet
+    latest_messages_queryset = Message.objects.filter(Q(id__in=latest_message_ids))
+
+
+    received_messages = my_message.filter(recipients=request.user).annotate(is_sent=Value(False, output_field=BooleanField()))
+    distinct_received_messages = received_messages.filter(
+    creation_date=Subquery(
+        received_messages.filter(sender=OuterRef('sender'))
+        .order_by('-creation_date')
+        .values('creation_date')[:1]
+        )
+    ).distinct('sender')
+    # print(i_send.filter(recipients=))
+    
+    # Get distinct senders from the filtered messages
+    # distinct_senders = received_messages.distinct('sender')
+    print(latest_messages_queryset.order_by('-creation_date').values_list('message',flat=True))
+    # print(type(distinct_received_messages))
+    # my_messages2=my_message.filter(recipients__contains=[str(request.user.id)]).distinct('sender').annotate(is_sent=Value(False, output_field=BooleanField()))
+    # merged = distinct_received_messages.union(latest_messages_queryset)
+    context['my_inbox']=i_send.union(distinct_received_messages).order_by('-creation_date')
     return render(request, 'messages/sent.html',context)
+
+# def m_inbox(request):
+#     my_inbox = Message.objects.filter(~Q(sender= request.user) )
+#     my_inbox = Message.objects.filter(recipients__contains=[str(request.user.id)])
+#     context['my_inbox']=my_inbox.distinct('sender')
+#     return render(request, 'messages/sent.html',context)
 def m_outbox(request):
     my_outbox = Message.objects.filter(~Q(recipients= request.user) )
     my_outbox = Message.objects.filter(sender=request.user)
@@ -334,7 +368,6 @@ def loginUser(request):
             else:
                  return HttpResponse("not active user or registered user")
             return HttpResponseRedirect(reverse('main:home'))
-        print(login_request.get('admin'))
         if login_request.get('admin')=="on":
             login(request, user)
             return HttpResponseRedirect(reverse('main:admin'))
@@ -345,13 +378,17 @@ def loginUser(request):
    
     else:
             return render (request,'main/login.html',context)
-        
+from django.core import serializers   
 def homePage(request):
-    context['startup'] = Startup.objects.all()
-    context['mentor'] = Mentor.objects.all()
-    context['incubator'] = IncubatorsAccelatorsHub.objects.all()
-    context['investor'] = DonorFunder.objects.all()
-    context['government'] = Government.objects.all()
+    context['startup'] = Startup.objects.filter(profile__user__is_active=True)
+    context['mentor'] = Mentor.objects.filter(profile__user__is_active=True)
+    context['incubator'] = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True)
+    context['investor'] = DonorFunder.objects.filter(profile__user__is_active=True)
+    context['government'] = Government.objects.filter(profile__user__is_active=True)
+    merged_objects = list(context['startup']) + list(context['mentor']) + list(context['incubator']) + list(context['investor']) + list(context['government'] )
+    data = serializers.serialize('json', merged_objects)
+    context['merged_objects']=merged_objects
+
     return render (request,'main/index.html',context)
 
 
@@ -581,7 +618,6 @@ def accept_friend_request(request, id):
 
 def delete_friend_request(request, id):
     requester = get_object_or_404(User, id=id)
-    # print(requester)
     frequest = Connect.objects.filter(requester=requester, responser=request.user).first()
     frequest.delete()
     return HttpResponseRedirect('/users/{}'.format(request.user.profile.id))
@@ -664,25 +700,18 @@ def send_friend_request(request, id):
 
 @login_required(login_url='/login/')
 def connect(request):
+    print(request.POST)
     user = get_object_or_404(User, id=request.POST.get('userId'))
-    # print(user)
-    # print(request.user)
     previuosly_connected = Connect.objects.filter(Q(requester=user)).filter( Q(responser=request.user))
-    # print(previuosly_connected)
     if not previuosly_connected:
         try:
             frequest, created = Connect.objects.get_or_create(
                 requester=request.user,
                 responser=user)
-            # print('saved')
         except Exception as e:
             print(e)
     else:
-         print('already connected')
-         
-         
-    # print(previuosly_connected)
-   
+         print('already connected')   
     return HttpResponse('users')
 
 def networks(request,typeOf):
@@ -733,16 +762,19 @@ def networks(request,typeOf):
                 if(not field.verbose_name ==  'ID' and not field.name == 'educational_level_other' and not field.name == 'educational_background_other' and not field.name == "mentor_area_other" and not field.name == "attachments"):
                     filters.append(field.verbose_name)
                     context['filters'] = filters  
+        context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+        context['mentors'] = Mentor.objects.exclude(Q(profile__user=request.user.id) )
+        context['mentors']= getFilteredOf(context['mentors'],request,context['connect'])
         if request.user.is_authenticated:
-            mentors = Mentor.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
-            context['mentors'] = mentors
             connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
             context['connectList']=connectList
             return render(request,'main/mentor.html', context)
         else:
             connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
-            mentors = Mentor.objects.filter(profile__user__is_active=True)
-            context['mentors'] = mentors
+            context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+            context['mentors'] = Mentor.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
+            context['mentors']= getFilteredOf(context['mentors'],request,context['connect'])
+
         return render(request,'main/mentor.html', context)
     if(typeOf=='incubator'):
         for field in IncubatorsAccelatorsHub._meta.get_fields(include_parents=False):
@@ -759,16 +791,19 @@ def networks(request,typeOf):
                 if(not field.verbose_name ==  'ID' and not field.name == 'ownership_other' and not field.name == 'funded_by_other'   and not field.name == "attachments" and not field.name == "focusIndustry"):
                     filters.append(field.verbose_name)
                     context['filters'] = filters
+        context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+        context['iah'] = IncubatorsAccelatorsHub.objects.exclude(Q(profile__user=request.user.id) )
+        context['iah']= getFilteredOf(context['iah'],request,context['connect'])
         if request.user.is_authenticated:
-            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
-            context['iah'] = iah
             connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
             context['connectList']=connectList
             return render(request,'main/iah.html', context)
         else:
             connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
-            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True)
-            context['iah'] = iah  
+            context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+            context['iah'] = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
+            context['iah']= getFilteredOf(context['iah'],request,context['connect'])
+
         return render(request,'main/iah.html', context)
     if(typeOf=='incub'):
         for field in IncubatorsAccelatorsHub._meta.get_fields(include_parents=False):
@@ -785,16 +820,19 @@ def networks(request,typeOf):
                 if(not field.verbose_name ==  'ID' and not field.name == 'ownership_other' and not field.name == 'funded_by_other'   and not field.name == "attachments" and not field.name == "focusIndustry"):
                     filters.append(field.verbose_name)
                     context['filters'] = filters
+        context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+        context['iah'] = IncubatorsAccelatorsHub.objects.exclude(Q(profile__user=request.user.id) ).filter(service='Incubation')
+        context['iah']= getFilteredOf(context['iah'],request,context['connect'])
         if request.user.is_authenticated:
-            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Incubation').exclude(profile__user=request.user.id)
-            context['iah'] = iah
             connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
             context['connectList']=connectList
             return render(request,'main/iah.html', context)
         else:
             connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
-            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Incubation')
-            context['iah'] = iah  
+            context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id)).filter(service='Incubation')
+            context['iah'] = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
+            context['iah']= getFilteredOf(context['iah'],request,context['connect'])
+
         return render(request,'main/iah.html', context)
     if(typeOf=='hub'):
         for field in IncubatorsAccelatorsHub._meta.get_fields(include_parents=False):
@@ -811,17 +849,20 @@ def networks(request,typeOf):
                 if(not field.verbose_name ==  'ID' and not field.name == 'ownership_other' and not field.name == 'funded_by_other'   and not field.name == "attachments" and not field.name == "focusIndustry"):
                     filters.append(field.verbose_name)
                     context['filters'] = filters
+        context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+        context['iah'] = IncubatorsAccelatorsHub.objects.exclude(Q(profile__user=request.user.id) ).filter(service='Hub')
+        context['iah']= getFilteredOf(context['iah'],request,context['connect'])
         if request.user.is_authenticated:
-            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Hub').exclude(profile__user=request.user.id)
-            context['iah'] = iah
             connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
             context['connectList']=connectList
             return render(request,'main/iah.html', context)
         else:
             connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
-            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Hub')
-            context['iah'] = iah  
-        return render(request,'main/iah.html', context)
+            context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id)).filter(service='Hub')
+            context['iah'] = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
+            context['iah']= getFilteredOf(context['iah'],request,context['connect'])
+            return render(request,'main/iah.html', context)
+
     if(typeOf=='acclerator'):
         for field in IncubatorsAccelatorsHub._meta.get_fields(include_parents=False):
             if isinstance(field, models.OneToOneField):
@@ -837,17 +878,19 @@ def networks(request,typeOf):
                 if(not field.verbose_name ==  'ID' and not field.name == 'ownership_other' and not field.name == 'funded_by_other'   and not field.name == "attachments" and not field.name == "focusIndustry"):
                     filters.append(field.verbose_name)
                     context['filters'] = filters
+        context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+        context['iah'] = IncubatorsAccelatorsHub.objects.exclude(Q(profile__user=request.user.id) ).filter(service='Accelerator')
+        context['iah']= getFilteredOf(context['iah'],request,context['connect'])
         if request.user.is_authenticated:
-            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Accelerator').exclude(profile__user=request.user.id)
-            context['iah'] = iah
             connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
             context['connectList']=connectList
             return render(request,'main/iah.html', context)
         else:
             connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
-            iah = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True,service='Accelerator')
-            context['iah'] = iah  
-        return render(request,'main/iah.html', context)
+            context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+            context['iah'] = IncubatorsAccelatorsHub.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id).filter(service='Accelerator')
+            context['iah']= getFilteredOf(context['iah'],request,context['connect'])
+            return render(request,'main/iah.html', context)
     
     if(typeOf=='investor'):
         for field in DonorFunder._meta.get_fields(include_parents=False):
@@ -864,16 +907,18 @@ def networks(request,typeOf):
                 if(not field.verbose_name ==  'ID' and not field.name == 'donor_type_by_other' and not field.name == 'investment_type_other' and not  field.name == "max_investment_range"):
                     filters.append(field.verbose_name)
                     context['filters'] = filters
+        context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+        context['investor'] = DonorFunder.objects.exclude(Q(profile__user=request.user.id) )
+        context['investor']= getFilteredOf(context['investor'],request,context['connect'])
         if request.user.is_authenticated:
-            investor = DonorFunder.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
-            context['investor'] = investor
             connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
             context['connectList']=connectList
             return render(request,'main/investor.html', context)
         else:
             connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
-            investor = DonorFunder.objects.filter(profile__user__is_active=True)
-            context['investor'] = investor  
+            context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+            context['investor'] = DonorFunder.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
+            context['investor']= getFilteredOf(context['investor'],request,context['connect'])
         return render(request,'main/investor.html', context)
     
     if(typeOf=='government'):
@@ -891,9 +936,10 @@ def networks(request,typeOf):
                 if(not field.verbose_name ==  'ID' and not field.name == 'GOVERNMENT_TYPE_other' ):
                     filters.append(field.verbose_name)
                     context['filters'] = filters
+                    context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+        context['investor'] = Government.objects.exclude(Q(profile__user=request.user.id) )
+        context['investor']= getFilteredOf(context['investor'],request,context['connect'])
         if request.user.is_authenticated:
-            investor = Government.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
-            context['investor'] = investor
             connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
             context['connectList']=connectList
             return render(request,'main/government.html', context)
@@ -902,34 +948,7 @@ def networks(request,typeOf):
             investor = Government.objects.filter(profile__user__is_active=True)
             context['investor'] = investor  
         return render(request,'main/government.html', context)
-    if(typeOf=='hub' or typeOf=="acclerator" or typeOf=="incub"):
-        for field in IncubatorsAccelatorsHub._meta.get_fields(include_parents=False):
-            if isinstance(field, models.OneToOneField):
-                if field.name=='description':
-                        for f in field.related_model._meta.get_fields(include_parents=False):
-                            if( str(f.name) ==  'name' or str(f.name)=='sector'):
-                                filters.append(f.verbose_name)
-                if field.name=='address':
-                        for f in field.related_model._meta.get_fields(include_parents=False):
-                            if( str(f.name) ==  'location' ):
-                                filters.append('Address')                      
-            else:  
-                if(not field.verbose_name ==  'ID' and not field.name == 'GOVERNMENT_TYPE_other' and not field.name == 'service' ):
-                    filters.append(field.verbose_name)
-                    context['filters'] = filters
-        if request.user.is_authenticated:
-            investor = IncubatorsAccelatorsHub.objects.filter(Q(profile__user__is_active=True)and Q(service=str(typeOf))).exclude(profile__user=request.user.id)
-            # print(investor)
-            context['investor'] = investor
-            connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
-            context['connectList']=connectList
-            return render(request,'main/iah.html', context)
-        else:
-            connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
-            investor = IncubatorsAccelatorsHub.objects.filter(Q(profile__user__is_active=True)and Q(service=str(typeOf))).exclude(profile__user=request.user.id)
-            context['investor'] = investor  
-        return render(request,'main/iah.html', context)
-
+  
     if(typeOf=='doner' ):
         for field in DonorFunder._meta.get_fields(include_parents=False):
             if isinstance(field, models.OneToOneField):
@@ -945,16 +964,18 @@ def networks(request,typeOf):
                 if(not field.verbose_name ==  'ID' and not field.name == 'donor_type_by_other' and not field.name == 'investment_type_other' and not  field.name == "max_investment_range"):
                     filters.append(field.verbose_name)
                     context['filters'] = filters
+        context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+        context['investor'] = DonorFunder.objects.exclude(Q(profile__user=request.user.id) )
+        context['investor']= getFilteredOf(context['investor'],request,context['connect'])
         if request.user.is_authenticated:
-            investor = DonorFunder.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
-            context['investor'] = investor
             connectList = Connect.objects.filter(Q(responser=request.user.id)|Q(requester=request.user.id))
             context['connectList']=connectList
             return render(request,'main/investor.html', context)
         else:
             connectList = Connect.objects.exclude(responser=request.user.id,requester=request.user.id)
-            investor = DonorFunder.objects.filter(profile__user__is_active=True)
-            context['investor'] = investor  
+            context['connect'] = Connect.objects.filter(Q(responser=request.user.id) | Q(requester=request.user.id))
+            context['investor'] = DonorFunder.objects.filter(profile__user__is_active=True).exclude(profile__user=request.user.id)
+            context['investor']= getFilteredOf(context['investor'],request,context['connect'])
         return render(request,'main/investor.html', context)
 
     
@@ -1234,7 +1255,6 @@ def register(request):
                 messages.error(request, "Unexpected Error: {}".format(e))
                 return redirect("main:register")
 
-        print(request)
         # return redirect("main:homepage")
     else:
         context['mentor_form'] = MentorForm()
@@ -1286,7 +1306,6 @@ def filter(request,typeOf):
                         if filterParams[param]:
                             startup = startup.filter(address__location__wereda_name=filterParams[param])
                 context['startups'] = startup.filter(profile__user__is_active=True)
-                print(startup)
                 return render(request,'main/startup_filters.html',context)
         if typeOf=='mentor':
             filterParams=json.loads(list(request.POST)[0])
@@ -1312,7 +1331,6 @@ def filter(request,typeOf):
                              
                     if param == 'mentor_area':
                         if filterParams[param]:
-                            print(filterParams[param])
                             q_objects = [Q(mentor_area__startswith=str(item)) for item in filterParams[param]]
                             query = reduce(or_, q_objects)
                             mentor = mentor.filter(query)     

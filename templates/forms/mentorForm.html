@@ -6,12 +6,10 @@
      
       {% csrf_token %}
       <input hidden name="Startup" value="Mentor">
-      <h4 style="color: #226470;" style="color: #226470;">Mentor Basics</h4>
       <div id="basicsMentor">
    
         {% include "./basic/basic.html" with typeOff="mentor_"  %}
    
-      <div class="row">
         <div class="form-group col-md-3">
           {{ mentor_form.educational_level|as_crispy_field }}
         </div>
@@ -43,9 +41,7 @@
             id="id_other_educational_background"
           />
         </div>
-        </div>
 
-        <div class="row">
           <div class="form-group col-md-3">
             {{ mentor_form.mentor_area|as_crispy_field }}
           </div>
@@ -69,16 +65,13 @@
             {{ mentor_form.attachments|as_crispy_field }}
             
           </div>
-          </div>
 
 
       </div>
       <div id="basicsAddress">
-        <h4 style="color: #226470;">Startup Address</h4>
         {% include "./basic/address.html" with typeOff="mentor_" %}
       </div>
       <div id="basicsResponsible">
-        <h4>Responsible Person</h4>
         {% include "./basic/person.html" %}
     </div>
       <button type="submit" class="btn btn-primary">Register</button>

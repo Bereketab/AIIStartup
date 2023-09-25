@@ -712,16 +712,31 @@
      data-gender="{% if iah_.profile.gender == '0' %}{{'Male'}}{% else %}{{'Female'}}{% endif %}"   
                   onclick="openModal(event)"
                 >
-                  Detail{{startup.is_connected}}
+                  Detail
                 </button>
-                {%if user.is_authenticated %}
-                <button class="btn btn-open">
-                  {% comment %} <a
-                    href="{% url 'main:freind_request' startup.profile.user.id%}"
-                    >Connect</a {% endcomment %}
-                  {% comment %} > {% endcomment %}
-                  </button
-                >{%endif%}
+                {% if user.is_authenticated %}
+
+                <form onsubmit=makeConnect(event,'{{iah_.profile.user}}','{{iah_.profile.user.id}}')>
+                  {% csrf_token %}
+                  
+                  <button class="btn btn-open " type="submit">
+                    <div id='loading{{iah_.profile.user.id}}' class="spinner-border d-none"
+                      style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                    {% if iah_.is_connected == 1 %}
+                    <p style="color:#0ea2bd">Pending</p>
+                    {% elif iah_.is_connected == 2 %}
+                    <a href="{% url 'main:m_compose' %}?return_to={{ iah_.profile.user.id }}"
+                      style="color:white">Message</a>
+                    {% elif iah_.is_connected == 3 %}
+                    <a id='connect{{iah_.profile.user.id}}'> Connect</a>
+                    {% else %}
+                    <a id='connect{{iah_.profile.user.id}}'> Connect</a>
+                    {% endif%}
+                  </button>
+                </form>
+                  {% endif%}
               </div>
             </article>
           </div>
@@ -892,6 +907,30 @@ if (imgSrc) {
   };
 </script>
 <script>
+   function makeConnect(e, user, id) {
+    e.preventDefault()
+    $('#loading' + id).removeClass('d-none')
+    $($('#connect' + id)).addClass('d-none')
+    const csrfmiddlewaretoken = document.querySelector(
+      "[name=csrfmiddlewaretoken]"
+    ).value;
+    $.ajax({
+      headers: { "X-CSRFToken": csrfmiddlewaretoken },
+      url: {% url 'main:connect'%},
+      data: { 'userId': id },
+      dataType: 'html',
+      type: "POST",
+      success: function (data) {
+        console.log($('#connect' + id))
+        setTimeout(() => {
+          $('#connect' + id).replaceWith('<p style="color:#0ea2bd"> connect request sent !</p>')
+          $('#loading' + id).addClass('d-none')
+        }, "3000");
+      },
+      error: function (data) {
+      }
+    });
+  }
   $(document).ready(function () {
     // $.validator.addMethod('confirmPass', function(value) {
     //   if($('#startup_password').val() == $('#startup_password2').val()){ return true; } return false;

@@ -33,7 +33,10 @@
 <script>
   function getContent(typeOf){
     var getContentByName = '{% url 'main:get_content' 12345 %}';
-  var url_mask = getContentByName.replace("12345", typeOf);
+  var url_mask = getContentByName.rument.querySelector(".overlay");
+  const openModalBtn = document.querySelector(".btn-open");
+  const closeModalBtn = document.getElementById("btn-close");
+  const closeModal = function (eplace("12345", typeOf);
     $.ajax({
       
       url: url_mask,
@@ -515,14 +518,32 @@
                   Detail
                 </button>
                 {%if user.is_authenticated %}
-                <form onsubmit=makeConnect(event,'{{startup.profile.user}}','{{startup.profile.user.id}}') class>
+
+                <form onsubmit=makeConnect(event,'{{startup.profile.user}}','{{startup.profile.user.id}}')>
                   {% csrf_token %}
-                    <button class="btn btn-open " >
-                    <div id='loading{{startup.profile.user.id}}' class="spinner-border d-none" style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
-                      <span class="sr-only" ></span>
+                  <button class="btn btn-open " type="submit">
+                    <div id='loading{{startup.profile.user.id}}' class="spinner-border d-none"
+                      style=" color:#0ea2bd; width: 3rem; height: 3rem;" role="status">
+                      <span class="sr-only"></span>
                     </div>
-                    {% include '../logged_user/status.html' %}
-                    </form>{%endif%}
+                   
+                    {% if   startup.is_connected == 1  %}
+                    <p  style="color:#0ea2bd">Pending</p>
+                    {% elif startup.is_connected == 2  %}
+                    <a  href="{% url 'main:m_compose' %}?return_to={{ startup.profile.user.id }}" style="color:white">Message</a>
+                    {% elif startup.is_connected == 3  %}
+                    <a id='connect{{startup.profile.user.id}}' > Connect</a>
+                    {% else %} 
+                    <a id='connect{{startup.profile.user.id}}' > Connect</a>
+                    </button>
+                    {% endif%}
+
+                </form>
+
+
+               {%endif%}
+
+                    
               </div>
             </article>
           </div>
@@ -540,7 +561,7 @@
 <section class="modal hidden">
   <div class="flex">
     <img src="" id="profile"  alt="user" />
-    <button class="btn-close">⨉</button>
+    <button  id="btn-close" class="btn-close">⨉</button>
   </div>
   <div>
     <img src="" alt="Logo" id="logo" class="image" style="max-width: 200px; max-height: 200px;">
@@ -563,10 +584,11 @@
 <div class="overlay hidden"></div>
 
 <script>
+ 
   const modal = document.querySelector(".modal");
   const overlay = document.querySelector(".overlay");
   const openModalBtn = document.querySelector(".btn-open");
-  const closeModalBtn = document.querySelector(".btn-close");
+  const closeModalBtn = document.getElementById("btn-close");
   const closeModal = function () {
     modal.classList.add("hidden");
     overlay.classList.add("hidden");
@@ -641,32 +663,29 @@ $("#sector").text(e.target.dataset.sector);
   
 </script>
 <script>
-function makeConnect(e,user,id){
-  e.preventDefault()
-  $('#loading'+id).removeClass('d-none')
-  $($('#connect'+id)).addClass('d-none')
-  const csrfmiddlewaretoken = document.querySelector(
-                "[name=csrfmiddlewaretoken]"
-              ).value;
-  $.ajax({
-    headers: { "X-CSRFToken": csrfmiddlewaretoken },
-    url: {% url 'main:connect'%},
-    data: {'userId':id},
-    dataType: 'html',
-    type: "POST",
-    success: function (data) {
-      setTimeout(() => {
-        $('#connect'+id).replaceWith('<p style="color:#0ea2bd"> connect request sent !</p>')
-        $('#loading'+id).addClass('d-none')
-      }, "3000");
-      
-      
-  
-      
-    },
-    error: function (data) {
-    }
-  });
-}
+  function makeConnect(e, user, id) {
+    e.preventDefault()
+    $('#loading' + id).removeClass('d-none')
+    $($('#connect' + id)).addClass('d-none')
+    const csrfmiddlewaretoken = document.querySelector(
+      "[name=csrfmiddlewaretoken]"
+    ).value;
+    $.ajax({
+      headers: { "X-CSRFToken": csrfmiddlewaretoken },
+      url: {% url 'main:connect'%},
+      data: { 'userId': id },
+      dataType: 'html',
+      type: "POST",
+      success: function (data) {
+        console.log($('#connect' + id))
+        setTimeout(() => {
+          $('#connect' + id).replaceWith('<p style="color:#0ea2bd"> connect request sent !</p>')
+          $('#loading' + id).addClass('d-none')
+        }, "3000");
+      },
+      error: function (data) {
+      }
+    });
+  }
 </script>
 {% endblock content %}

@@ -3,41 +3,84 @@
 {% load static %}
 {% include './header.html' %}
 
-
+<style>
+  .col-md-3{
+    display: grid;
+    float: left;
+    width: 25%;
+    padding-left: 10px;
+  }
+  .col-md-12{
+    display: grid;
+    float: left;
+    width: 100%;
+    
+  }
+  .form-text {
+  margin-top: -3.75rem;
+  font-size: 11px;
+  color: #6c757d;
+  margin-right: 10px;
+  text-align: right;
+  font-style: italic;
+}
+.btn-primary{
+  float: right;
+}
+.form-check {
+  display: inline-block;
+  min-height: 1.5rem;
+  padding-left: 29px;
+  margin-bottom: .125rem;
+  text-align: left;
+  font-size: 12px;
+  font-weight: bolder;
+}
+</style>
 <section class="">
   <div class="row d-flex justify-content-center align-items-center h-100">
-    <div class="col-lg-12 col-xl-11">
+    <div class="col-lg-12 col-xl-12">
         <div class="login-home card-body p-md-5">
           <div class="row justify-content-center">
             <div class="col-md-10 col-lg-6 col-xl-12 order-2 order-lg-1">
 
               <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
 
-              <select class="form-select d-flex md-4" id="option-select">
-                <option  class="dropdown-item" value="">Select Option</option>
-                <option  class="dropdown-item" value="option-1">Startup</option>
-                <option  class="dropdown-item" value="option-2">Mentor</option>
-                <option  class="dropdown-item" value="option-3">Incubator/Hub/Acclerator</option>
-                <option  class="dropdown-item" value="option-4">Donor/Funder</option>
-                <option  class="dropdown-item" value="option-5">Government</option>
-              </select>
-              <div id="option-1-content" class="d-none">
-                {% include '../forms/startupForm.html' with utype='strap'%}
-              </div>
+              <div class="col-lg-12">
+                <div class="col-md-3">
 
-              <div id="option-2-content" class="d-none">
-                {% include '../forms/mentorForm.html' %}
+                  <label for="id_name" class="form-label requiredField">
+                    select<span class="asteriskField">*</span>
+                </label>            
+                  <select class="d-flex" id="option-select">
+                    <option  class="dropdown-item" value="">Select Option</option>
+                    <option  class="dropdown-item" value="option-1">Startup</option>
+                    <option  class="dropdown-item" value="option-2">Mentor</option>
+                    <option  class="dropdown-item" value="option-3">Incubator/Hub/Acclerator</option>
+                    <option  class="dropdown-item" value="option-4">Donor/Funder</option>
+                    <option  class="dropdown-item" value="option-5">Government</option>
+                  </select>
+                </div>
+                <div id="option-1-content" class="d-none">
+                  {% include '../forms/startupForm.html' with utype='strap'%}
+                </div>
+            
+                <div id="option-2-content" class="d-none">
+                  {% include '../forms/mentorForm.html' %}
+                </div>
+  
+                <div id="option-3-content" class="d-none">
+                  {% include '../forms/incubatorForm.html' %}
+                </div>
+                <div id="option-4-content" class="d-none">
+                  {% include '../forms/donorForm.html' %}
+                </div>
+                <div id="option-5-content" class="d-none">
+                  {% include '../forms/governmentForm.html' %}
+                </div>
               </div>
-
-              <div id="option-3-content" class="d-none">
-                {% include '../forms/incubatorForm.html' %}
               </div>
-              <div id="option-4-content" class="d-none">
-                {% include '../forms/donorForm.html' %}
-              </div>
-              <div id="option-5-content" class="d-none">
-                {% include '../forms/governmentForm.html' %}
-              </div>
+             
 
             </div>
           </div>
