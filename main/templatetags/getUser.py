@@ -109,10 +109,34 @@ def getOtherRecipent(userId,user):
 @register.filter
 def isSent(recipient_ids,user):
     try:
-        print(recipient_ids)
-        return True
+        if user in recipient_ids:
+            return False
+        else:
+            return True
+        
     except Profile.DoesNotExist:
         return ''
+
+@register.filter
+def getName(recipient_ids):
+    try:
+        profile = Profile.objects.filter(user_id__in=recipient_ids)
+        if profile:
+            startup = list(Startup.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
+            mentor = list(Mentor.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
+            iha = list(IncubatorsAccelatorsHub.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
+            donor_funder = list(DonorFunder.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
+            government = list(Government.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
+            m=startup+mentor+iha+donor_funder+government
+            result_string = ','.join(m)
+            print(result_string)
+
+            # print(m)
+            return result_string
+
+    except Profile.DoesNotExist:
+        return ''
+    
     
 @register.filter
 def getSenderPic(userId):

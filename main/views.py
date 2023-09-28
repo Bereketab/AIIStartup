@@ -344,7 +344,7 @@ def m_inbox(request):
     i_receive=i_receive.filter(pk__in=sorted(list(set([e['id'] for e in grouped_messages_i_recive]))))
     merged=i_receive| i_send
     context['my_inbox']=merged.order_by('-creation_date')
-    print(merged.values())
+    # print(merged.values())
     return render(request, 'messages/sent.html',context)
 
 def m_outbox(request):

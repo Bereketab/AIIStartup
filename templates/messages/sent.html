@@ -27,18 +27,12 @@
 
             {% for c in my_inbox %}
            
-            <li class="p-2 border-bottom" style="{%if c.recipient_ids|isSent request.user %} background-color: #eee; {%else%} background-color: #2234; {%endif%}">
+            <li class="p-2 border-bottom" style="{%if c.recipient_ids|isSent:request.user.id %} background-color: #eee; {%else%} background-color: #2234; {%endif%}">
               <a class="d-flex justify-content-between">
                 <div class="d-flex flex-row">
                  
-                
-
-                  <img src="{{ c.sender.id|getSenderPic }}" alt="avatar"
-                    class="rounded-circle d-flex align-self-center me-2 shadow-1-strong" width="30"
-                    title="{{ c.sender.username }}">
-
                   <div class="pt-1">
-                    <p class="small text-muted">{{ c.message }}  {{c.is_sent}}</p>
+                    <p class="small text-muted">{{c.recipient_ids|getName}}</p>
                   </div>
 
                 </div>
