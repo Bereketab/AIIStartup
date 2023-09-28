@@ -354,7 +354,9 @@ class Message(models.Model):
         verbose_name = 'message'
         verbose_name_plural = 'messages'
         # ordering = ('creation_date',)
-        
+    def get_recipient_ids(self):
+        return list(self.recipients.values_list('id', flat=True))
+
 
 class Poster(models.Model):
     name = models.CharField(verbose_name='name',max_length=500)

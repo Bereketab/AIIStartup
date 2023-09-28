@@ -107,6 +107,14 @@ def getOtherRecipent(userId,user):
         return ''
     
 @register.filter
+def isSent(recipient_ids,user):
+    try:
+        print(recipient_ids)
+        return True
+    except Profile.DoesNotExist:
+        return ''
+    
+@register.filter
 def getSenderPic(userId):
     try:
         profile = Profile.objects.get(user__id=userId)
