@@ -30,13 +30,12 @@ urlpatterns = [
     re_path(r'^users/delete/(?P<id>[\w-]+)/$', views.delete_friend_request),
     # path('compose/', views.ComposeMessageView.as_view(), name='m_compose'),
     path('message/compose', views.m_compose, name='m_compose'),
-    path('message/inbox', views.m_inbox, name='m_inbox'),
+    path('message/inbox', views.conversations, name='m_inbox'),
     path('message/outbox', views.m_outbox, name='m_outbox'),
     
     path('send/', views.sentMessage, name='sentMessage'),
     path('sentMessagefromDetail/', views.sentMessagefromDetail, name='sentMessagefromDetail'),
-
-    
+    path('getDetail/', views.getDetail, name='getDetail'),
     path('connection/connected', views.c_connected, name='c_connected'),
     path('connection/sent', views.c_sent, name='c_sent'),
     path('connection/recieved', views.c_recived, name='c_recived'),

@@ -3,6 +3,9 @@ from ..models import *
 from django.contrib.auth.models import User,Group
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.db.models import BooleanField
+from django.db.models import Value
+
 register = template.Library()
 
 
@@ -118,9 +121,10 @@ def isSent(recipient_ids,user):
         return ''
 
 @register.filter
-def getName(recipient_ids):
+def getName(message,userId):
     try:
-        profile = Profile.objects.filter(user_id__in=recipient_ids)
+        profile = Profile.objects.filter(user_id__in=message.recipient_ids)
+        # messages = Message.objects
         if profile:
             startup = list(Startup.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
             mentor = list(Mentor.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
@@ -128,12 +132,19 @@ def getName(recipient_ids):
             donor_funder = list(DonorFunder.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
             government = list(Government.objects.filter(profile_id__in=list(profile.values_list('id',flat=True))).values_list('profile__user__username',flat=True))
             m=startup+mentor+iha+donor_funder+government
+            userName=User.objects.get(id=userId).username
+            for i in m:
+                if i==userName:
+                    m.remove(userName)
+                    m.append(str(message.sender))
+            # print(m.remove(str(userName)))
+                    # print(type(userName))
             result_string = ','.join(m)
-            print(result_string)
+            
+            # print(type(profile))
 
-            # print(m)
+            # print(User.objects.get(id=userId).username)
             return result_string
-
     except Profile.DoesNotExist:
         return ''
     
@@ -147,40 +158,75 @@ def getSenderPic(userId):
         return ''
 from django.db.models import Q
 @register.filter
-def getLatestMessage(userId):
+def getAllRelated(conversationId,userId):
+    # print(conversationId)
     try:
-        latest_message = Message.objects.get(id=userId)
-        
-        # Get the latest message for the given sender and where any recipient in latest_message.recipients
-        latest_message = Message.objects.filter(
-            sender=latest_message.sender,
-            recipients__overlap=latest_message.recipients  # Use overlap for array matching
-        ).latest('creation_date')
-        
-        return latest_message.message
+        message = Message.objects.filter(conversation=conversationId)
+        message_sent = message.filter(sender=userId).annotate(is_sent=Value(True, output_field=BooleanField()))
+        message_recive = message.exclude(sender=userId).annotate(is_sent=Value(False, output_field=BooleanField()))
+        merged = message_recive.union(message_sent)
+        return merged.order_by('-timestamp')
     except Profile.DoesNotExist:
         return ''
 
 @register.filter
-def getLatestMessageTime(userId):
+def getLatestMessageTime(conversationId,userId):
     try:
-        latest_message = Message.objects.get(id=userId)
-        latest_message = Message.objects.filter(
-            sender=latest_message.sender,
-            recipients__overlap=latest_message.recipients  # Use overlap for array matching
-        ).latest('creation_date')
-        return latest_message.creation_date
+        timestamp = Message.objects.filter(conversation=conversationId).order_by('-timestamp').first().timestamp
+        return timestamp
+
     except Profile.DoesNotExist:
         return ''
-@register.filter
-def getAllRelated(userId):
-    try:
-        latest_message = Message.objects.get(id=userId)
-        latest_message = Message.objects.filter(
-            sender=latest_message.sender,
-             # Use overlap for array matching
-        )
-        return latest_message
-    except Profile.DoesNotExist:
-        return ''
+from django.contrib.postgres.aggregates import ArrayAgg
+# @register.filter
+# def getAllRelated(userId):
+#     try:
+#         latest_message=Message.objects.annotate(recipient_ids=ArrayAgg("recipients"))
+#         latest_message1 = latest_message.get(id=userId)
+#         latest_message2 = latest_message.filter(
+#             sender=latest_message1.sender,
+#             recipient_ids=sorted(latest_message1.recipient_ids)
+#         )
+#         latest_message3 = latest_message.filter(
+#             sender_id__in=sorted(latest_message1.recipient_ids),
+#         )
+#         return latest_message3.filter(recipient_ids=sorted(latest_message1.recipient_ids)).union(latest_message2)
+#     except Profile.DoesNotExist:
+#         return ''
     
+# @register.filter
+# def isSender(message,userId):
+#     try:
+#         latest_message=Message.objects.annotate(recipient_ids=ArrayAgg("recipients"))
+#         latest_message2 = latest_message.get(id=message)
+#         # if(latest_message2.)
+#         # latest_message2 = latest_message.filter(
+#         #     sender=latest_message2.sender,
+#         #     recipient_ids=sorted(latest_message2.recipient_ids)
+#         # )
+#         return latest_message2.sender.id==userId
+#     except Profile.DoesNotExist:
+#         return ''
+    
+    
+    
+from aii_startup import settings
+@register.filter
+def getV(value):
+    print(value)
+    return True
+
+@register.filter
+def getRecipentImage(cId,uId):
+    c=Conversation.objects.get(id=cId)
+    profile = Profile.objects.filter(id__in=sorted(list(c.participants.values_list('id',flat=True)))).exclude(user_id=uId)
+    media_url = settings.MEDIA_URL  # Make sure 'settings' is imported
+    paths=list(profile.values_list('profile_pic',flat=True))
+    usernames,pic = list(profile.values_list('user__username','profile_pic'))
+    
+    # print(usernames)
+    # print(pic)
+    # recipient_images = [f"{media_url}{path}" for path in paths]
+    
+    return {'src':[f"{media_url}{path}" for path in paths],'username':usernames}
+

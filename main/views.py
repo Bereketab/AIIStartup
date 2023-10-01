@@ -161,36 +161,51 @@ import ast
 def sentMessage(request):
     if request.method == "POST":
         recipient_ids = [int(i) for i in ast.literal_eval(request.POST['recievers'])]
-        message = Message(
-            sender=request.user,
-            message=request.POST['message'],
-        )
+        content = request.POST['message']
+        subject=request.POST['subject']
+        
+        # Create a new conversation or find an existing one with the same participants
+        conversation, created = Conversation.objects.get_or_create(subject=request.POST['subject'])
+        conversation.participants.set(recipient_ids + [request.user.id])
+
+        # Create a new message and associate it with the conversation and sender
+        message = Message(conversation=conversation, sender=request.user, content=content)
         message.save()
-        
-        # Loop through recipient IDs and add each recipient to the message.
-        for recipient_id in recipient_ids:
-            recipient = User.objects.get(pk=recipient_id)  # Replace User with your User model.
-            message.recipients.add(recipient)
 
         
-        return HttpResponse('sent')
+        return render(request, 'messages/after_sent.html',context)
 
 
+def conversations(request):
+    user = request.user
+    conversations = Conversation.objects.filter(participants=user).order_by('pk').distinct()
 
+    # For each conversation, get the latest message and attach it to the conversation
+    for conversation in conversations:
+        latest_message = Message.objects.filter(conversation=conversation).latest('timestamp')
+        
+        conversation.latest_message = latest_message
+    
+    context = {
+        'conversations': conversations
+    }
+    # print(conversations.order_by('pk').values())
+
+
+    return render(request, 'messages/sent.html',context)
 import ast
 def sentMessagefromDetail(request):
     if request.method=="POST":
+        conversationId=request.POST['conversationId']
+        content = request.POST['message']
+        conversation, created = Conversation.objects.get_or_create(id=conversationId)
 
-  
-        message = Message(
-			sender=request.user,
-			message=request.POST['message'],
-            recipients=ast.literal_eval(request.POST['recievers'])
-            )
+        # Create a new message and associate it with the conversation and sender
+        message = Message(conversation=conversation, sender=request.user, content=content)
         message.save()
+        return render(request, 'messages/after_sent.html',context)
 
-        
-        return HttpResponse(message)
+
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -308,44 +323,67 @@ from django.db.models import BooleanField, Value, Count
 from django.contrib.postgres.fields import ArrayField
 import datetime
 from django.contrib.postgres.aggregates import ArrayAgg
-def m_inbox(request):
-    my_message = Message.objects.all()
-    i_send = my_message.filter(sender=request.user)
-    i_receive = my_message.filter(recipients=request.user)   
-    i_send = i_send.annotate(recipient_ids=ArrayAgg("recipients"))
-    def getLatestISend( x):
-        count = 0
-        v=[]
-        for ele in i_send:
-            if (sorted(ele.recipient_ids)==sorted(list(x))):
-                v.append({'creation_date':ele.creation_date,'id':ele.id})
-        count = max(list(x for x in v), key=lambda x: x['creation_date'])
-        return count
+
+# def m_inbox(request):
+#     my_message = Message.objects.all()
+#     i_send = my_message.filter(sender=request.user)
+#     i_receive = my_message.filter(recipients=request.user)   
+#     i_send = i_send.annotate(recipient_ids=ArrayAgg("recipients"))
+#     def getLatestISend( x):
+#         count = 0
+#         v=[]
+#         for ele in i_send:
+#             if (sorted(ele.recipient_ids)==sorted(list(x))):
+#                 v.append({'creation_date':ele.creation_date,'id':ele.id})
+#         count = max(list(x for x in v), key=lambda x: x['creation_date'])
+#         return count
     
-    grouped_messages_i_send = []
-    grouped_messages_i_recive = []
-    for message_data in i_send:
-        recipient_ids_tuple = tuple(sorted(message_data.recipient_ids))
-        grouped_messages_i_send.append(getLatestISend(recipient_ids_tuple))
-    i_send=i_send.filter(pk__in=sorted(list(set([e['id'] for e in grouped_messages_i_send]))))
-    i_receive=my_message.filter(id__in=list(i_receive.values_list('id',flat=True))).annotate(recipient_ids=ArrayAgg("recipients"))
+#     grouped_messages_i_send = []
+#     grouped_messages_i_recive = []
+#     for message_data in i_send:
+#         recipient_ids_tuple = tuple(sorted(message_data.recipient_ids))
+#         grouped_messages_i_send.append(getLatestISend(recipient_ids_tuple))
+#     i_send=i_send.filter(pk__in=sorted(list(set([e['id'] for e in grouped_messages_i_send]))))
+#     i_receive=my_message.filter(id__in=list(i_receive.values_list('id',flat=True))).annotate(recipient_ids=ArrayAgg("recipients"))
     
-    def getLatestIRecive( x):
-        count = 0
-        v=[]
-        for ele in i_receive:
-            if (sorted(ele.recipient_ids)==sorted(list(x))):
-                v.append({'creation_date':ele.creation_date,'id':ele.id})
-        count = max(list(x for x in v), key=lambda x: x['creation_date'])
-        return count
-    for message_data in i_receive:
-        recipient_ids_tuple = message_data.recipient_ids
-        grouped_messages_i_recive.append(getLatestIRecive(recipient_ids_tuple))
-    i_receive=i_receive.filter(pk__in=sorted(list(set([e['id'] for e in grouped_messages_i_recive]))))
-    merged=i_receive| i_send
-    context['my_inbox']=merged.order_by('-creation_date')
-    # print(merged.values())
-    return render(request, 'messages/sent.html',context)
+#     def getLatestIRecive( x):
+#         count = 0
+#         v=[]
+#         for ele in i_receive:
+#             if (sorted(ele.recipient_ids)==sorted(list(x))):
+#                 v.append({'creation_date':ele.creation_date,'id':ele.id})
+#         count = max(list(x for x in v), key=lambda x: x['creation_date'])
+#         return count
+#     for message_data in i_receive:
+#         recipient_ids_tuple = message_data.recipient_ids
+#         grouped_messages_i_recive.append(getLatestIRecive(recipient_ids_tuple))
+#     i_receive=i_receive.filter(pk__in=sorted(list(set([e['id'] for e in grouped_messages_i_recive]))))
+#     merged=my_message.filter(sender=request.user).values('creation_date').annotate(
+#     recipient_ids=ArrayAgg('recipients')
+# ).order_by('-creation_date')| my_message.filter(recipients=request.user).values('creation_date').annotate(
+#     recipient_ids=ArrayAgg('recipients')
+# ).order_by('-creation_date')   
+
+    
+    
+#     context['my_inbox']=merged
+#     print(merged.values())
+#     return render(request, 'messages/sent.html',context)
+
+@csrf_exempt
+def getDetail(request):
+    if request.method=="POST":
+        conversationId = request.POST['conversationID']
+        
+        message = Message.objects.filter(conversation=conversationId)
+        message_sent = message.filter(sender_id=request.user.id).annotate(is_sent=Value(True, output_field=BooleanField()))
+        message_recive = message.exclude(sender_id=request.user.id).annotate(is_sent=Value(False, output_field=BooleanField()))
+        merged = message_recive.union(message_sent)
+        context['messages']=merged.order_by('timestamp')
+        print(merged.values())
+
+        
+        return render(request,'messages/message-detail.html',context)
 
 def m_outbox(request):
     my_outbox = Message.objects.filter(~Q(recipients= request.user) )

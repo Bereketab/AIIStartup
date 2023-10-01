@@ -3,86 +3,157 @@
 {%load static %}
 {% load getUser %}
 {% load humanize %}
-<!-- ======= Breadcrumbs ======= -->
-<div class="breadcrumbs">
-  <div class="container"></div>
-</div>
-<!-- End Breadcrumbs -->
+<script src="{% static 'js/jquery-3.6.0.js'%}"></script>
+<script src="{% static 'js/jquery-ui.js'%}"></script>
 
-<!-- ======= Blog Section ======= -->
-<!-- WAnbehagerlij126 -->
-<div class="container py-5">
+<style>
+  .jj{
+    background-color: #eee !important;
+  }
+</style>
+<section style="background-color: #eee;" >
+  <div class="container py-5">
 
-  <div class="row">
+    <div class="row">
 
-    <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
+      <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
 
-      <h5 class="font-weight-bold mb-3 text-center text-lg-start">messages</h5>
+        <h5 class="font-weight-bold mb-3 text-center text-lg-start">Member</h5>
 
-      <div class="card">
-        <div class="card-body">
+        <div class="card">
+          <div class="card-body">
 
-          <ul class="list-unstyled mb-0">
-
-
-            {% for c in my_inbox %}
-           
-            <li class="p-2 border-bottom" style="{%if c.recipient_ids|isSent:request.user.id %} background-color: #eee; {%else%} background-color: #2234; {%endif%}">
-              <a class="d-flex justify-content-between">
-                <div class="d-flex flex-row">
-                 
-                  <div class="pt-1">
-                    <p class="small text-muted">{{c.recipient_ids|getName}}</p>
+            <ul class="list-unstyled mb-0">
+              {% for c in conversations %}
+              <li id="li{{c.id}}"  onclick="updateMessage(event,'{{c.id}}')" class="p-2 border-bottom {% if forloop.first %}jj{%endif%}" >
+                <a href="#" class="d-flex justify-content-between">
+                  <div class="d-flex flex-row">
+                    {% for r in c.id|getRecipentImage:request.user.id%}
+                    
+                    <img data-mdb-toggle="tooltip" title="{{r.username}}" src="{{r.src}}" alt="avatar"
+                      class="rounded-circle d-flex align-self-center me-3 shadow-1-strong" width="30">
+                      {%endfor%}
+                    <div class="pt-1">
+                      <p class="small text-muted">{{c.subject}}</p>
+                    </div>
                   </div>
+                  <div class="pt-1">
+                    <p class="small text-muted mb-1">{{c.id|getLatestMessageTime:request.user.id|naturaltime}}</p>
+                    <span class="badge bg-danger float-end">1</span>
+                  </div>
+                </a>
+              </li>
+              {% endfor %}
+             
+            </ul>
 
-                </div>
-                <div class="pt-1">
-                  <p class="small text-muted mb-1">{{ c.creation_date|naturaltime }}</p>
-                  <span class="badge bg-danger float-end">1</span>
-                </div>
-              </a>
-            </li>
-
-
-            {% endfor %}
-
-          </ul>
-
+          </div>
         </div>
+
+      </div>
+
+      <div class="col-md-6 col-lg-7 col-xl-8">
+
+        <ul class="list-unstyled" style="top: 59px;position: relative;" >
+          <div id="replaced">
+          {% for i in conversations.0.id|getAllRelated:request.user.id %}
+          <p hidden id="conversationId" data-conversationId="{{i.conversation.id}}"></p>
+          {% if i.is_sent %}
+  
+  
+          <li class="d-flex  justify-content-between mb-4">
+            <img src="{{i.sender|getUserPic}}" alt="avatar"
+              class="rounded-circle d-flex align-self-start me-3 shadow-1-strong" width="60">
+            <div class="card" style="  width: 100%;">
+              <div class="card-header d-flex justify-content-between p-3">
+                <p class="fw-bold mb-0">{{ i.sender.username }}</p>
+                <p class="text-muted small mb-0"><i class="far fa-clock"></i> {{ i.timestamp|naturaltime }}</p>
+              </div>
+              <div class="card-body">
+                <p class="mb-0">
+                  {{i.content}}
+                </p>
+              </div>
+            </div>
+          </li>
+          {% else %}
+          <li class="d-flex justify-content-between mb-4">
+            <div class="card w-100">
+              <div class="card-header d-flex justify-content-between p-3">
+                <p class="fw-bold mb-0">{{ i.sender.username }}</p>
+                <p class="text-muted small mb-0"><i class="far fa-clock"></i> {{ i.timestamp|naturaltime }}</p>
+              </div>
+              <div class="card-body">
+                <p class="mb-0">
+                  {{i.content}}
+                </p>
+              </div>
+            </div>
+            <img src="{{i.sender|getUserPic}}" alt="avatar"
+              class="rounded-circle d-flex align-self-start ms-3 shadow-1-strong" width="60">
+          </li>
+          {% endif %}
+          {% endfor %}
+          <input hidden id="{{my_inbox.0.id}}" name="id_">
+          <input hidden id="{{my_inbox.0.sender.id}}" name="sender">
+        </div>
+          <form id="message_form" method="post">
+            {% csrf_token %}
+  
+            <li class="bg-white mb-3">
+              <div class="form-outline">
+                <textarea required class="form-control" id="textAreaExample2" rows="4"></textarea>
+                <label class="form-label" for="textAreaExample2">Message</label>
+              </div>
+            </li>
+            <button type="submit"  class="btn btn-info btn-rounded float-end">Send</button>
+          </form>
+        </ul>
+
       </div>
 
     </div>
 
-<!-- 2,10,11,12 -->
   </div>
-
-</div>
-<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-
-<script>
-
-// console.log($("[name='recivers']")[0].id)
-  let loginForm = document.getElementById("message_form");
-  loginForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const message = $('#textAreaExample2').val();
-     $.ajax({
-      headers: { "X-CSRFToken":  '{{ csrf_token }}' },
-      url: {% url 'main:sentMessagefromDetail'  %},
-      data: {sender:$("[name='sender']")[0].id,recievers:$("[name='recivers']")[0].id,"message":message},
+</section>
+  <script>
+    function updateMessage(e,messageId){
+  e.preventDefault()
+  console.log(messageId)
+  $('.jj').removeClass('jj');
+  $('#li'+messageId).addClass('jj');
+  $.ajax({
+      headers: { "X-CSRFToken": '{{ csrf_token }}' },
+      url: {% url 'main:getDetail'  %},
+      data: {  "conversationID": messageId },
       type: "POST",
       success: function (data) {
-       $('#textAreaExample2').val('');
+        $('#replaced').replaceWith(data)
+      },
+      error: function (data) {
+      }
+    });
+ 
+}
+let message_form = document.getElementById("message_form");
+  message_form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    console.log($('#conversationId')[0].dataset.conversationid)
+    const message = $('#textAreaExample2').val();
+    $.ajax({
+      headers: { "X-CSRFToken": '{{ csrf_token }}' },
+      url: {% url 'main:sentMessagefromDetail'  %},
+      data: { "conversationId": $('#conversationId')[0].dataset.conversationid, "message": message },
+      type: "POST",
+      success: function (data) {
+        $('#textAreaExample2').val('');
         window.location.reload()
-      
+
       },
       error: function (data) {
       }
     });
   });
-
-
-</script>
+  </script>
 {% endblock content%}
+

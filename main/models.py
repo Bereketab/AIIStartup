@@ -7,7 +7,18 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
-
+# \copy(
+# SELECT *
+# FROM   auth_user,main_wereda,main_address,
+# main_profile,main_description,
+# main_connect,
+# main_donorfunder,main_government,
+# main_incubatorsaccelatorshub,
+# main_mentor,
+# main_startup
+# )               
+# TO '/home/anonymous/Documents/pal.cs'
+# ;
 
 
 class EthRegion(models.Model):
@@ -340,22 +351,21 @@ class Carousel(models.Model):
 
 
 
-class Message(models.Model):
-    sender = models.ForeignKey(User, related_name='message_sender_user', verbose_name='user', on_delete=models.CASCADE)
-    message = models.TextField()  # Remove max_length or set it to a suitable value
-    recipients = models.ManyToManyField(User, related_name='received_messages', blank=True)
-    creation_date = models.DateTimeField('Creation date', auto_now_add=True)
-    disabled = models.BooleanField(default=False)
+class Conversation(models.Model):
+    subject = models.CharField(max_length=255)
+    participants = models.ManyToManyField(User, related_name='conversations')
 
     def __str__(self):
-        return self.message  # Return the message content as the string representation
+        return self.subject
 
-    class Meta:
-        verbose_name = 'message'
-        verbose_name_plural = 'messages'
-        # ordering = ('creation_date',)
-    def get_recipient_ids(self):
-        return list(self.recipients.values_list('id', flat=True))
+class Message(models.Model):
+    conversation = models.ForeignKey(Conversation, related_name='message_conversations', on_delete=models.CASCADE)
+    sender = models.ForeignKey(User,related_name='message_sender', on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField('timestamp',auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.sender.username} - {self.content[:50]}'
 
 
 class Poster(models.Model):
